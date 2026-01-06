@@ -99,31 +99,50 @@ async function extractUrlMetadata(url) {
   try {
     console.log(`Fetching metadata for: ${url}`);
     
-    // Use a service that can fetch page content
-    const response = await fetch(`https://r.jina.ai/http://${url}`, {
-      method: 'GET',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; IntegralBots/1.0)'
+    // Method 1: Try Jina AI (most reliable)
+    try {
+      // Clean URL for Jina AI - remove query params and ensure proper format
+      const cleanUrl = url.split('?')[0];
+      const jinaUrl = `https://r.jina.ai/http://${cleanUrl}`;
+      
+      console.log(`🌐 Trying Jina AI with URL: ${jinaUrl}`);
+      
+      const response = await fetch(jinaUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; IntegralBots/1.0)'
+        },
+        timeout: 15000 // 15 second timeout
+      });
+      
+      if (response.ok) {
+        const text = await response.text();
+        const lines = text.split('\n');
+        
+        // Extract title and description from Jina AI summary
+        let title = '';
+        let description = '';
+        
+        for (const line of lines) {
+          if (line.startsWith('Title:')) {
+            title = line.replace('Title:', '').trim();
+          } else if (line.startsWith('Summary:')) {
+            description = line.replace('Summary:', '').trim();
+          }
+        }
+        
+        if (title) {
+          console.log(`✅ Jina AI success - Title: "${title}"`);
+          return {
+            title: title,
+            description: description || `Content from ${new URL(url).hostname}`
+          };
+        }
+      } else {
+        throw new Error(`Jina AI returned ${response.status}`);
       }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.status}`);
-    }
-    
-    const text = await response.text();
-    const lines = text.split('\n');
-    
-    // Extract title and description from Jina AI summary
-    let title = '';
-    let description = '';
-    
-    for (const line of lines) {
-      if (line.startsWith('Title:')) {
-        title = line.replace('Title:', '').trim();
-      } else if (line.startsWith('Summary:')) {
-        description = line.replace('Summary:', '').trim();
-      }
+    } catch (jinaError) {
+      console.warn(`❌ Jina AI failed: ${jinaError.message}`);
     }
     
     // Fallback if no title found
@@ -195,10 +214,21 @@ export async function replyToUri(agent, parentUri, text, personaKey, tone) {
 
 export async function listMentions(agent, limit = 25) {
   // Notifications are the simplest "opt-in" gate: only respond when tagged.
+  console.log(`🔔 Fetching notifications with limit: ${limit}`);
+  
   const res = await agent.listNotifications({ limit });
   const notifs = res?.data?.notifications ?? [];
   
+  console.log(`📊 Total notifications retrieved: ${notifs.length}`);
+  
+  // Debug: Log all notifications to understand structure
+  notifs.forEach((notif, i) => {
+    console.log(`🔍 Notification ${i}: reason="${notif.reason}", uri="${notif.uri}", author="${notif.author?.handle}"`);
+  });
+  
   const mentions = notifs.filter(n => (n.reason === "mention" || n.reason === "reply") && n.uri);
+  
+  console.log(`📝 Filtered to ${mentions.length} mentions/replies`);
   
   return mentions;
 }
@@ -261,18 +291,29 @@ export async function getUnansweredMentions(agent, personaKey, state, hoursBack 
   const notifs = await listMentions(agent, 100); // Get more notifications to catch all mentions
   const cutoffTime = Date.now() - (hoursBack * 60 * 60 * 1000);
   
+  console.log(`🕐 Filtering mentions from last ${hoursBack} hours (cutoff: ${new Date(cutoffTime).toISOString()})`);
+  
   const unanswered = [];
   
   for (const notif of notifs) {
+    console.log(`🔍 Processing notification: ${notif.uri} | reason: ${notif.reason} | author: ${notif.author?.handle}`);
+    
     // Skip if too old
     if (notif.indexedAt && new Date(notif.indexedAt).getTime() < cutoffTime) {
+      console.log(`⏰ Skipping old notification: ${notif.uri} (${notif.indexedAt})`);
       continue;
     }
     
     // Skip if already replied to (more comprehensive check)
     const wasReplied = state?.bots?.[personaKey]?.repliedTo?.includes(notif.uri) ||
                        state?.seenNotifications?.[personaKey]?.includes(notif.uri);
+    
+    console.log(`📋 Reply check for ${notif.uri}: wasReplied=${wasReplied}`);
+    console.log(`📋 State check: repliedTo=${state?.bots?.[personaKey]?.repliedTo?.length || 0} items`);
+    console.log(`📋 State check: seenNotifications=${state?.seenNotifications?.[personaKey]?.length || 0} items`);
+    
     if (wasReplied) {
+      console.log(`⏭ Already replied to: ${notif.uri}`);
       continue;
     }
     
@@ -281,12 +322,16 @@ export async function getUnansweredMentions(agent, personaKey, state, hoursBack 
                      Object.values(state?.bots || {}).some(bot => 
                        bot.handle === notif.author.handle);
     
+    console.log(`🤖 Bot check: ${notif.author?.handle} isFromBot=${isFromBot}`);
+    
     unanswered.push({
       ...notif,
       isFromBot,
       priority: isFromBot ? 2 : 1 // Prioritize bot-to-bot interactions
     });
   }
+  
+  console.log(`📊 Final unanswered count: ${unanswered.length}`);
   
   // Sort by priority (bot interactions first) and recency
   return unanswered.sort((a, b) => {
