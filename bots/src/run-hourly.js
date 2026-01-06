@@ -73,7 +73,9 @@ async function run() {
             promptText: prompt, 
             config,
             isFromBot: mention.isFromBot,
-            priority: mention.priority
+            priority: mention.priority,
+            originalPostAuthor: mention.author?.handle,
+            originalPostUri: mention.uri
           });
 
           console.log(`✅ Generated reply: "${replyText}"`);

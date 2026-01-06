@@ -458,9 +458,9 @@ function generateLearningContext(recommendations) {
 }
 
 /**
- * Compose a reply using OpenAI's Responses API.
+ * Compose a reply using OpenAI's Responses API with context awareness and conversation threading.
  */
-export async function composeReply({ personaKey, promptText, config }) {
+export async function composeReply({ personaKey, promptText, config, isFromBot, priority, originalPostAuthor, originalPostUri }) {
     if (!config.openaiApiKey) {
         throw new Error(`OPENAI_API_KEY is not set. Cannot generate reply for ${personaKey}.`);
     }
@@ -472,20 +472,64 @@ export async function composeReply({ personaKey, promptText, config }) {
     const personaPrompt = getPersonaPrompt(personaKey);
     const tone = pick(TONES);
 
+    // Enhanced context: try to get original post content
+    let enhancedContext = promptText ?? "(no context provided)";
+    
+    // If we have the original post URI, try to fetch its content for better context
+    if (originalPostUri && originalPostUri.includes('app.bsky.feed.post')) {
+        try {
+            // Extract DID and post ID from URI
+            const match = originalPostUri.match(/at:\/\/did:([^\/]+)\/app\.bsky\.feed\.post\/([^]+)/);
+            if (match) {
+                const [, did, postId] = match;
+                
+                // Try to get the original post content
+                const postResponse = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.feed.getPost?uri=${encodeURIComponent(originalPostUri)}`);
+                if (postResponse.ok) {
+                    const postData = await postResponse.json();
+                    if (postData.thread?.post?.record?.text) {
+                        enhancedContext = postData.thread.post.record.text;
+                        console.log(`📖 Fetched original post content: "${enhancedContext.substring(0, 100)}..."`);
+                    }
+                }
+            }
+        } catch (fetchError) {
+            console.warn(`⚠️ Could not fetch original post: ${fetchError.message}`);
+        }
+    }
+
     const input = [
         personaPrompt,
         "",
         "## YOUR TASK",
         `Write a SHORT, COMPLETE reply (under 280 characters) to someone who tagged you.`,
-        `CRITICAL: Every sentence MUST be complete. NO trailing off with "..." or incomplete thoughts.`,
-        `DO NOT end with conjunctions like "and", "but", "because" without finishing thought.`,
-        `Tone: ${tone}`,
+        "CRITICAL REQUIREMENTS:",
+        "1. READ AND UNDERSTAND the original post content - don't just respond generically",
+        "2. Add YOUR UNIQUE PERSPECTIVE as this persona - what insights can only you offer?",
+        "3. ADVANCE THE CONVERSATION - ask questions, offer insights, or connect to bigger ideas",
+        "4. TAG THE ORIGINAL POSTER using @handle to continue the conversation",
+        "5. Every sentence MUST be complete. NO trailing off with '...' or incomplete thoughts",
+        "6. DO NOT end with conjunctions like 'and', 'but', 'because' without finishing thought",
         "",
-        "## CONTEXT FROM THE USER'S POST",
-        promptText ?? "(no context provided)",
+        `## CONTEXT FROM THE USER'S POST`,
+        enhancedContext,
+        "",
+        `## CONVERSATION CONTEXT`,
+        `- This is a ${isFromBot ? 'bot-to-bot' : 'human-to-bot'} interaction`,
+        `- Priority level: ${priority}`,
+        `- Original poster: @${originalPostAuthor || 'unknown'}`,
+        "",
+        `## TONE FOR THIS REPLY`,
+        `Approach: ${tone}`,
+        "",
+        "## REPLY REQUIREMENTS",
+        "- MUST tag @original_poster_handle to continue conversation",
+        "- Add unique insights from your persona's perspective",
+        "- Ask thoughtful questions or make connections",
+        "- Keep it conversational and engaging",
+        "- ENSURE EVERY SENTENCE IS COMPLETE AND PROPERLY ENDED",
         "",
         "Just output the reply text, nothing else.",
-        "ENSURE EVERY SENTENCE IS COMPLETE AND PROPERLY ENDED.",
     ].join("\n");
 
     console.log(`[${personaKey}] Calling OpenAI for reply with tone: ${tone}`);
