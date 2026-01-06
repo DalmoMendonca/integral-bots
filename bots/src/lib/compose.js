@@ -188,17 +188,16 @@ export function validateCompleteSentences(text) {
         return false;
     }
     
-    // Check for incomplete sentence patterns
+    // Check for MAJOR incomplete sentence patterns (more lenient)
     const incompletePatterns = [
-        /\b(like|such as|including|for example|for instance)\s*$/, // Ending with examples
+        /\b(like|such as|including|for example|for instance)\s*[.!?]*$/, // Ending with examples
         /\b(and|but|or|nor|so|yet|for)\s*$/, // Ending with conjunctions
         /\b(although|because|since|while|whereas|when|if|unless)\s*$/, // Ending with subordinating conjunctions
-        /\b(the|a|an|this|that|these|those|my|your|his|her|its|our|their)\s*$/, // Ending with determiners
         /\.\.\.$/, // Ellipses (trailing off)
         /\b(War|As|When|While|Although|Because|If|Since|Being|Like|Such)\s*\w*\s*…\s*$/, // Incomplete starts
-        /\b\s*[,:;]\s*$/, // Ending with punctuation that suggests continuation
     ];
     
+    // Only flag MAJOR issues, not minor ones
     for (const pattern of incompletePatterns) {
         if (pattern.test(trimmed)) {
             return false;
@@ -207,7 +206,7 @@ export function validateCompleteSentences(text) {
     
     // Ensure we have actual content, not just punctuation
     const contentWithoutPunctuation = trimmed.replace(/[.!?]+/g, '').trim();
-    if (contentWithoutPunctuation.length < 5) {
+    if (contentWithoutPunctuation.length < 3) {
         return false;
     }
     
@@ -598,8 +597,12 @@ async function generatePersonaInsights(personaKey, contentAnalysis) {
         });
 
         const insightsText = resp.output_text?.trim() || "{}";
+        
+        // Clean up potential JSON parsing issues
+        const cleanedInsights = insightsText.replace(/```json\s*|\`\`\`|```/g, '').trim();
+        
         console.log(`🎭 Persona insights generated for ${personaKey}`);
-        return JSON.parse(insightsText);
+        return JSON.parse(cleanedInsights);
     } catch (error) {
         console.warn(`Persona insights failed: ${error.message}`);
         return {
@@ -658,8 +661,12 @@ async function identifyControversyOpportunities(contentAnalysis, personaInsights
         });
 
         const controversyText = resp.output_text?.trim() || "{}";
+        
+        // Clean up potential JSON parsing issues
+        const cleanedControversy = controversyText.replace(/```json\s*|\`\`\`|```/g, '').trim();
+        
         console.log(`🔥 Controversy analysis completed`);
-        return JSON.parse(controversyText);
+        return JSON.parse(cleanedControversy);
     } catch (error) {
         console.warn(`Controversy analysis failed: ${error.message}`);
         return {
