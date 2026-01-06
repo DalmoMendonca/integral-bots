@@ -53,6 +53,8 @@ export async function createPost(agent, text, personaKey, tone, topic) {
   const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
   const urls = text.match(urlRegex) || [];
   
+  console.log(`🔗 URL EXTRACTION: Found ${urls.length} URLs in text:`, urls);
+  
   const postOptions = {
     text: rt.text,
     facets: rt.facets,
@@ -61,6 +63,7 @@ export async function createPost(agent, text, personaKey, tone, topic) {
   
   // Try to create embed for first URL if found
   if (urls.length > 0) {
+    console.log(`🔗 EMBED ATTEMPT: Creating embed for URL: ${urls[0]}`);
     try {
       const url = urls[0];
       console.log(`Creating embed for URL: ${url}`);
@@ -92,11 +95,15 @@ export async function createPost(agent, text, personaKey, tone, topic) {
       
       postOptions.embed = embedData;
       
-      console.log(`Created embed with title: "${metadata.title}", thumbnail: ${metadata.thumbnail ? 'YES' : 'NO'}`);
+      console.log(`✅ EMBED SUCCESS: Created embed with title: "${metadata.title}", thumbnail: ${metadata.thumbnail ? 'YES' : 'NO'}`);
+      console.log(`🔗 EMBED DATA:`, JSON.stringify(embedData, null, 2));
     } catch (e) {
-      console.warn(`Could not create embed for URL ${urls[0]}:`, e.message);
+      console.warn(`❌ EMBED FAILED: Could not create embed for URL ${urls[0]}:`, e.message);
+      console.warn(`🔗 ERROR STACK:`, e.stack);
       // Continue without embed if it fails
     }
+  } else {
+    console.log(`🔗 NO EMBED: No URLs found in text to embed`);
   }
 
   const result = await agent.post(postOptions);
