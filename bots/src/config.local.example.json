@@ -1,0 +1,17 @@
+{
+  "timezone": "America/Chicago",
+  "postMinute": 20,
+  "bots": {
+    "RUTH": {
+      "handle": "ruth.example.bsky.social",
+      "appPassword": "xxxx-xxxx-xxxx-xxxx"
+    },
+    "BRYCE": {
+      "handle": "bryce.example.bsky.social",
+      "appPassword": "xxxx-xxxx-xxxx-xxxx"
+    }
+  },
+  "feeds": [],
+  "maxPostsPerRun": 7,
+  "maxRepliesPerRun": 6
+}
