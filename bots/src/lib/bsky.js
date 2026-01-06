@@ -414,11 +414,14 @@ export async function getUnansweredMentions(agent, personaKey, state, hoursBack 
     let postText = notif.reason; // Fallback
     try {
       if (notif.uri) {
+        console.log(`🔍 FETCHING POST: Attempting to get content for ${notif.uri}`);
         const thread = await agent.getPostThread({ uri: notif.uri, depth: 0 });
         postText = thread?.data?.thread?.post?.record?.text || notif.reason;
+        console.log(`🔍 FETCHED POST CONTENT: "${postText?.substring(0, 100)}..."`);
       }
     } catch (e) {
       console.warn(`Could not fetch post content for ${notif.uri}:`, e?.message);
+      console.warn(`🔍 ERROR STACK:`, e.stack);
     }
     
     unanswered.push({
