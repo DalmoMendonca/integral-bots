@@ -59,7 +59,7 @@ function getPersonaInfo(handle) {
   return { name: 'Unknown', stage: 'Unknown', color: '#64748b', bgColor: '#f8fafc', borderColor: '#e2e8f0' };
 }
 
-export default function BotFeed({ handle }) {
+export default function BotFeed({ handle, searchQuery = '', reportPostsData }) {
   const [data, setData] = useState(null);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
@@ -67,6 +67,38 @@ export default function BotFeed({ handle }) {
 
   const personaInfo = useMemo(() => getPersonaInfo(handle), [handle]);
   const profileUrl = useMemo(() => `https://bsky.app/profile/${handle}`, [handle]);
+
+  // Filter posts based on search query
+  const filteredPosts = useMemo(() => {
+    const posts = data?.posts || [];
+    if (!searchQuery.trim()) return posts;
+    
+    const q = searchQuery.trim().toLowerCase();
+    return posts.filter(post => post.text.toLowerCase().includes(q));
+  }, [data?.posts, searchQuery]);
+
+  // Report posts data to parent component
+  useEffect(() => {
+    if (reportPostsData && data?.posts) {
+      reportPostsData(handle, data.posts);
+    }
+  }, [handle, data?.posts, reportPostsData]);
+
+  // Function to highlight search terms
+  const highlightText = useCallback((text, query) => {
+    if (!query.trim()) return text;
+    
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const parts = text.split(regex);
+    
+    return parts.map((part, index) => 
+      regex.test(part) ? (
+        <span key={index} className="bg-yellow-200 font-medium">{part}</span>
+      ) : (
+        part
+      )
+    );
+  }, []);
 
   async function load() {
     if (!isRefreshing) setLoading(true);
@@ -188,8 +220,20 @@ export default function BotFeed({ handle }) {
           </div>
         )}
 
+        {!loading && !err && searchQuery && filteredPosts.length === 0 && (data?.posts?.length ?? 0) > 0 && (
+          <div className="text-center py-8">
+            <div className="h-12 w-12 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-3">
+              <svg className="h-6 w-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <div className="text-sm text-slate-500">No posts match "{searchQuery}"</div>
+            <div className="text-xs text-slate-400 mt-1">Try searching for different words</div>
+          </div>
+        )}
+
         <div className="flex flex-col gap-3">
-          {(data?.posts ?? []).slice(0, 6).map((p, index) => (
+          {filteredPosts.slice(0, 6).map((p, index) => (
             <div
               key={p.uri}
               className="group rounded-2xl border p-3 hover:shadow-md transition-all duration-200 cursor-pointer"
@@ -200,7 +244,7 @@ export default function BotFeed({ handle }) {
               onClick={() => window.open(p.url, '_blank')}
             >
               <div className="text-sm leading-relaxed text-slate-800 whitespace-pre-wrap break-words">
-                {p.text}
+                {highlightText(p.text, searchQuery)}
               </div>
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-xs" style={{ color: personaInfo.color }}>
