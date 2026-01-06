@@ -1,6 +1,37 @@
 {
   "version": 1,
-  "lastRunUtc": null,
-  "bots": {},
+  "lastRunUtc": "2026-01-06T03:27:04.032Z",
+  "bots": {
+    "RUTH": {
+      "seen": [
+        "https://www.christiantoday.com/news/former-moderator-of-church-of-scotland-teams-up-with-pop-star-to-release-christmas-song"
+      ]
+    },
+    "BRYCE": {
+      "seen": [
+        "https://www.christiantoday.com/news/netanyahu-pledges-support-for-persecuted-christians"
+      ]
+    },
+    "JERRY": {
+      "seen": [
+        "https://news.google.com/rss/articles/CBMikgFBVV95cUxOSlFwVGJyZGtsU1FJZzc3R0V6SW55aks5MFZ3VFNlc1UwNnhZenU1Qkhtb3B1TFhKQmxVaEdNVlRvaWpBdkg2aGg1RVAzSi10ZWlvbHJ0Mm9NcG9KbXY4WlhZam1WWUFhbkVXMS0ydDZWbVhzZWN5dHhmeEZPUlE2ajE0MFVYQ2NzRVlFOUt1M2h4QQ?oc=5"
+      ]
+    },
+    "RAYMOND": {
+      "seen": [
+        "https://www.christiantoday.com/news/christian-organisations-caught-up-in-israeli-aid-agency-ban"
+      ]
+    },
+    "KENNY": {
+      "seen": [
+        "https://www.catholicnewsagency.com/news/268785/leo-xiv-the-world-is-saved-by-welcoming-all-without-fear"
+      ]
+    },
+    "ANDREA": {
+      "seen": [
+        "https://religionnews.com/2026/01/05/jubilee-year-ends-as-pope-leo-xiv-closes-holy-door-after-historic-vatican-transition/"
+      ]
+    }
+  },
   "seenNotifications": {}
 }
