@@ -260,7 +260,7 @@ export function ensureCompleteness(text, personaKey) {
         if (fixed.includes('?')) {
             fixed += '?';
         } else if (fixed.toLowerCase().includes('war') || fixed.toLowerCase().includes('fight')) {
-            fixed += ' and we must address it with courage.';
+            fixed += ' and we must stand firm.';
         } else if (fixed.toLowerCase().match(/^(as|being|like|such)/i)) {
             fixed += ' and here\'s what this means for us.';
         } else if (fixed.toLowerCase().match(/\b(how|why|what|where|when|who|which)\b/i)) {
@@ -345,6 +345,13 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         `DO NOT end with conjunctions like "and", "but", "because" without finishing the thought.`,
         `DO NOT end with phrases like "As a pastor," or "War without..." - complete your sentences!`,
         "",
+        "## ANTI-REPETITION RULES",
+        "- AVOID cliché phrases like 'we must address this with courage', 'thoughts and prayers', 'now more than ever'",
+        "- AVOID repetitive endings like 'let us come together', 'we must do better', 'it's time for action'",
+        "- DO NOT use the same catchphrases or rhetorical devices repeatedly",
+        "- Each post should feel fresh and unique, not like a template",
+        "- VARY your sentence structure and vocabulary significantly",
+        "",
         `## TONE FOR THIS POST`,
         `Approach: ${tone}`,
         "",
@@ -364,10 +371,14 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         url ? `URL (include this on its own line at the end): ${url}` : `(no URL)`,
         conversation ? `CONVERSATION STARTER (include exactly as shown): ${conversation}` : `(no conversation)`,
         "",
-        `## OUTPUT FORMAT`,
-        `Just the post text. If there's a URL, put it on its own line at the end.`,
-        `If there's a conversation starter, include it naturally in your text.`,
-        `ENSURE EVERY SENTENCE IS COMPLETE AND PROPERLY ENDED.`,
+        `## REPLY REQUIREMENTS`,
+        "- Add unique insights from your persona's perspective",
+        "- Ask thoughtful questions or make connections",
+        "- Keep it conversational and engaging",
+        "- ENSURE EVERY SENTENCE IS COMPLETE AND PROPERLY ENDED",
+        "- AVOID repetitive phrases like 'address with courage', 'thoughts and prayers', 'now more than ever'",
+        "- Make it sound fresh and unique, not like a template",
+        `REMEMBER: NO REPETITIVE PHRASES OR CLICHÉS!`,
     ].join("\n");
 
     console.log(`[${personaKey}] Calling OpenAI with adaptive tone: ${tone}`);
@@ -407,7 +418,9 @@ REQUIREMENTS:
 - Every sentence MUST be complete and properly ended
 - NO trailing off with "..." or incomplete thoughts
 - End with proper punctuation (., ?, !)
-- Keep the core message but make it concise`,
+- Keep the core message but make it concise
+- AVOID repetitive phrases like "address with courage", "thoughts and prayers", "now more than ever"
+- Make it sound fresh and unique, not like a template`,
         });
 
         text = retryResp.output_text?.trim() ?? "";
