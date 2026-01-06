@@ -63,8 +63,8 @@ async function run() {
         
         console.log(`📝 Processing mention ${replied + 1}/${unansweredMentions.length}: ${mention.uri}`);
         
-        // Enhanced context with thread awareness
-        const prompt = mention.reason || mention.text || "mention";
+        // Enhanced context with thread awareness - use actual post text
+        const prompt = mention.text || mention.reason || "mention";
         console.log(`💭 Prompt text: "${prompt}"`);
         
         // Calculate reply count and conversation depth from state

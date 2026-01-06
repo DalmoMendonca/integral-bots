@@ -61,33 +61,9 @@ function pick(arr) {
  * Get adaptive tone selection based on learning data
  */
 export function getAdaptiveTone(personaKey) {
-    const recommendations = performanceTracker.getAdaptiveRecommendations(personaKey);
-    
-    // If we have learning data, use it
-    if (recommendations && recommendations.preferredTones && recommendations.preferredTones.length > 0) {
-        // Weight selection toward preferred tones
-        const preferredWeights = recommendations.preferredTones.map(t => ({
-            tone: t.tone,
-            weight: Math.min(t.effectiveness, 2.0) // Cap weight at 2.0
-        }));
-        
-        // Avoid least effective tones (with null check)
-        const avoidedTones = new Set(
-            (recommendations.avoidedTones || []).map(t => t.tone)
-        );
-        
-        const availableTones = TONES.filter(tone => {
-            const toneName = tone.split(' - ')[0];
-            return !avoidedTones.has(toneName);
-        });
-        
-        if (availableTones.length > 0) {
-            return pick(availableTones);
-        }
-    }
-    
-    // Fallback to random selection
-    return pick(TONES);
+    // Simplified tone selection since we removed complex performance tracking
+    const tones = ['analytical', 'empathetic', 'provocative', 'inspirational', 'conversational'];
+    return tones[Math.floor(Math.random() * tones.length)];
 }
 
 /**
@@ -538,8 +514,17 @@ async function deepContentAnalysis(originalPostUri, linkedArticles = []) {
         });
 
         const analysisText = resp.output_text?.trim() || "{}";
+        
+        // More robust JSON parsing - handle various formats
+        let cleanedAnalysis = analysisText
+            .replace(/```(?:json)?\s*[\r\n]*([\s\S]*?)```/g, '$1') // Remove code blocks
+            .replace(/```(?:g)?\s*([\s\S]*?)```/g, '$1') // Remove generic code blocks
+            .replace(/^[\s`'"]+|[\s`'"]+$/g, '') // Remove leading/trailing quotes
+            .replace(/[\r\n]+/g, ' ') // Clean up newlines
+            .trim();
+        
         console.log(`📚 Deep content analysis completed`);
-        return JSON.parse(analysisText);
+        return JSON.parse(cleanedAnalysis);
     } catch (error) {
         console.warn(`Content analysis failed: ${error.message}`);
         return {
@@ -673,8 +658,13 @@ async function identifyControversyOpportunities(contentAnalysis, personaInsights
 
         const controversyText = resp.output_text?.trim() || "{}";
         
-        // Clean up potential JSON parsing issues
-        const cleanedControversy = controversyText.replace(/```json\s*|\`\`\`|```/g, '').trim();
+        // More robust JSON parsing - handle various formats
+        let cleanedControversy = controversyText
+            .replace(/```(?:json)?\s*[\r\n]*([\s\S]*?)```/g, '$1') // Remove code blocks
+            .replace(/```(?:g)?\s*([\s\S]*?)```/g, '$1') // Remove generic code blocks
+            .replace(/^[\s`'"]+|[\s`'"]+$/g, '') // Remove leading/trailing quotes
+            .replace(/[\r\n]+/g, ' ') // Clean up newlines
+            .trim();
         
         console.log(`🔥 Controversy analysis completed`);
         return JSON.parse(cleanedControversy);

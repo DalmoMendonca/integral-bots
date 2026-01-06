@@ -403,8 +403,20 @@ export async function getUnansweredMentions(agent, personaKey, state, hoursBack 
     
     console.log(`🤖 Bot check: ${notif.author?.handle} isFromBot=${isFromBot}`);
     
+    // CRITICAL: Fetch the actual post content to get the text for AI response
+    let postText = notif.reason; // Fallback
+    try {
+      if (notif.uri) {
+        const postRecord = await agent.getPost({ rkey: notif.uri.split('/').pop() });
+        postText = postRecord?.data?.post?.record?.text || notif.reason;
+      }
+    } catch (e) {
+      console.warn(`Could not fetch post content for ${notif.uri}:`, e?.message);
+    }
+    
     unanswered.push({
       ...notif,
+      text: postText, // Add the actual post text
       isFromBot,
       priority: isFromBot ? 2 : 1 // Prioritize bot-to-bot interactions
     });
