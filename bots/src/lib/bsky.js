@@ -56,39 +56,22 @@ export async function createPost(agent, text, personaKey, tone, topic) {
   if (urls.length > 0) {
     try {
       const url = urls[0];
-      // For Bluesky, we need to resolve the external URL to create an embed
-      const response = await fetch(url, { method: 'HEAD' });
+      console.log(`Creating embed for URL: ${url}`);
       
-      if (response.ok) {
-        const contentType = response.headers.get('content-type') || '';
-        
-        // Create embed based on content type
-        if (contentType.includes('text/html')) {
-          // External link embed
-          postOptions.embed = {
-            $type: 'app.bsky.embed.external',
-            external: {
-              uri: url,
-              title: extractTitleFromUrl(url),
-              description: extractDescriptionFromUrl(url),
-            }
-          };
-        } else if (contentType.startsWith('image/')) {
-          // Image embed
-          postOptions.embed = {
-            $type: 'app.bsky.embed.images',
-            images: [{
-              alt: 'Embedded image',
-              image: {
-                $type: 'blob',
-                ref: {
-                  $link: url
-                }
-              }
-            }]
-          };
+      // Extract rich metadata using Jina AI
+      const metadata = await extractUrlMetadata(url);
+      
+      // Create rich external embed
+      postOptions.embed = {
+        $type: 'app.bsky.embed.external',
+        external: {
+          uri: url,
+          title: metadata.title,
+          description: metadata.description,
         }
-      }
+      };
+      
+      console.log(`Created embed with title: "${metadata.title}"`);
     } catch (e) {
       console.warn(`Could not create embed for URL ${urls[0]}:`, e.message);
       // Continue without embed if it fails
@@ -112,14 +95,69 @@ export async function createPost(agent, text, personaKey, tone, topic) {
 }
 
 // Helper functions for embed metadata
+async function extractUrlMetadata(url) {
+  try {
+    console.log(`Fetching metadata for: ${url}`);
+    
+    // Use a service that can fetch page content
+    const response = await fetch(`https://r.jina.ai/http://${url}`, {
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; IntegralBots/1.0)'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.status}`);
+    }
+    
+    const text = await response.text();
+    const lines = text.split('\n');
+    
+    // Extract title and description from Jina AI summary
+    let title = '';
+    let description = '';
+    
+    for (const line of lines) {
+      if (line.startsWith('Title:')) {
+        title = line.replace('Title:', '').trim();
+      } else if (line.startsWith('Summary:')) {
+        description = line.replace('Summary:', '').trim();
+      }
+    }
+    
+    // Fallback if no title found
+    if (!title) {
+      const urlObj = new URL(url);
+      title = urlObj.hostname.replace('www.', '');
+    }
+    
+    // Clean up description - make it more natural
+    if (description.length > 200) {
+      description = description.substring(0, 197) + '...';
+    }
+    
+    console.log(`Extracted - Title: "${title}", Description: "${description.substring(0, 50)}..."`);
+    
+    return {
+      title: title || `Link from ${new URL(url).hostname}`,
+      description: description || `Check out this content from ${new URL(url).hostname}`
+    };
+    
+  } catch (error) {
+    console.warn(`Metadata extraction failed for ${url}:`, error.message);
+    return {
+      title: `Link from ${new URL(url).hostname}`,
+      description: `Check out this link: ${url}`
+    };
+  }
+}
+
 function extractTitleFromUrl(url) {
-  // Simple fallback - in production, you might want to fetch and parse HTML
-  const domain = new URL(url).hostname;
-  return `Link from ${domain}`;
+  return `Link from ${new URL(url).hostname}`;
 }
 
 function extractDescriptionFromUrl(url) {
-  // Simple fallback
   return `Check out this link: ${url}`;
 }
 
@@ -159,7 +197,10 @@ export async function listMentions(agent, limit = 25) {
   // Notifications are the simplest "opt-in" gate: only respond when tagged.
   const res = await agent.listNotifications({ limit });
   const notifs = res?.data?.notifications ?? [];
-  return notifs.filter(n => (n.reason === "mention" || n.reason === "reply") && n.uri);
+  
+  const mentions = notifs.filter(n => (n.reason === "mention" || n.reason === "reply") && n.uri);
+  
+  return mentions;
 }
 
 export async function updatePostMetrics(agent, personaKey) {

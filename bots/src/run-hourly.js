@@ -60,7 +60,9 @@ async function run() {
         if (replied >= perBotReplyBudget) break;
         
         // Enhanced context with thread awareness
-        const prompt = mention?.record?.text ?? mention?.reason ?? "mention";
+        const prompt = mention.reason || mention.text || "mention";
+        console.log(`Processing mention: ${JSON.stringify(mention, null, 2)}`);
+        
         const replyText = await composeReply({ 
           personaKey, 
           promptText: prompt, 
