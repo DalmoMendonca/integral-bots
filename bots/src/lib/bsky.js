@@ -414,8 +414,8 @@ export async function getUnansweredMentions(agent, personaKey, state, hoursBack 
     let postText = notif.reason; // Fallback
     try {
       if (notif.uri) {
-        const postRecord = await agent.getPost({ rkey: notif.uri.split('/').pop() });
-        postText = postRecord?.data?.post?.record?.text || notif.reason;
+        const thread = await agent.getPostThread({ uri: notif.uri, depth: 0 });
+        postText = thread?.data?.thread?.post?.record?.text || notif.reason;
       }
     } catch (e) {
       console.warn(`Could not fetch post content for ${notif.uri}:`, e?.message);
