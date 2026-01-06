@@ -64,16 +64,16 @@ export function getAdaptiveTone(personaKey) {
     const recommendations = performanceTracker.getAdaptiveRecommendations(personaKey);
     
     // If we have learning data, use it
-    if (recommendations.preferredTones.length > 0) {
+    if (recommendations && recommendations.preferredTones && recommendations.preferredTones.length > 0) {
         // Weight selection toward preferred tones
         const preferredWeights = recommendations.preferredTones.map(t => ({
             tone: t.tone,
             weight: Math.min(t.effectiveness, 2.0) // Cap weight at 2.0
         }));
         
-        // Avoid least effective tones
+        // Avoid least effective tones (with null check)
         const avoidedTones = new Set(
-            recommendations.avoidedTones.map(t => t.tone)
+            (recommendations.avoidedTones || []).map(t => t.tone)
         );
         
         const availableTones = TONES.filter(tone => {
