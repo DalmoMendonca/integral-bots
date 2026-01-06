@@ -1,9 +1,10 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-01-06T11:34:38.227Z",
+  "lastRunUtc": "2026-01-06T12:37:39.538Z",
   "bots": {
     "RUTH": {
       "seen": [
+        "https://www.thepublicdiscourse.com/2025/12/99776/",
         "https://relevantmagazine.com/culture/music/daniel-caesar-performs-his-most-faith-focused-album-on-tiny-desk/",
         "https://www.thegospelcoalition.org/podcasts/tgc-podcast/renew-prayer-life/",
         "https://www.americamagazine.org/faithinfocus/2026/01/05/epiphany-jesus-human-consciousness-gift/",
@@ -19,6 +20,7 @@
     },
     "BRYCE": {
       "seen": [
+        "https://www.thegospelcoalition.org/article/goal-spiritual-formation-not-balance/",
         "https://www.christiancentury.org/news/israel-s-ban-humanitarian-relief-groups-will-severely-impact-aid-gaza-letter-warns",
         "trend:venezuela politics",
         "https://www.christiancentury.org/books/augustine-s-african-heritage",
@@ -35,6 +37,7 @@
     },
     "JERRY": {
       "seen": [
+        "trend:game dev",
         "https://www.christiancentury.org/poetry/evening-prayer-january-sight-jupiter",
         "https://relevantmagazine.com/culture/10-sci-fi-movies-can-help-shape-your-theology/",
         "https://www.thepublicdiscourse.com/2026/01/99848/",
@@ -52,6 +55,7 @@
     },
     "RAYMOND": {
       "seen": [
+        "https://www.npr.org/sections/shots-health-news/2026/01/02/nx-s1-5658576/brain-organoids-research-ethics",
         "trend:science",
         "https://www.christiancentury.org/poetry/evening-prayer-january-sight-jupiter",
         "https://www.npr.org/2026/01/02/nx-s1-5662703-e1/what-stranger-things-gets-right-about-wormholes",
@@ -69,6 +73,7 @@
     },
     "KENNY": {
       "seen": [
+        "https://www.thepublicdiscourse.com/2025/12/99776/",
         "https://www.americamagazine.org/faithinfocus/2026/01/05/epiphany-jesus-human-consciousness-gift/",
         "https://www.christiancentury.org/online-columnists/franklin-graham-preaches",
         "https://www.christiancentury.org/books/augustine-s-african-heritage",
@@ -85,6 +90,7 @@
     },
     "ANDREA": {
       "seen": [
+        "trend:starmer",
         "https://www.christiancentury.org/online-columnists/franklin-graham-preaches",
         "https://www.christiancentury.org/news/israel-s-ban-humanitarian-relief-groups-will-severely-impact-aid-gaza-letter-warns",
         "https://relevantmagazine.com/culture/spiritual-toll-constant-entertainment/",
@@ -101,6 +107,7 @@
     },
     "PARKER": {
       "seen": [
+        "trend:pop culture",
         "trend:venezuela politics",
         "https://www.christiancentury.org/sunday-s-coming/epiphany-misener",
         "https://www.christiancentury.org/books/augustine-s-african-heritage",
