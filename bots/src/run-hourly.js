@@ -56,26 +56,38 @@ async function run() {
       const unansweredMentions = await getUnansweredMentions(agent, personaKey, state, 24);
       let replied = 0;
 
+      console.log(`🎯 Reply loop starting: ${unansweredMentions.length} unanswered mentions, budget: ${perBotReplyBudget}`);
+
       for (const mention of unansweredMentions) {
         if (replied >= perBotReplyBudget) break;
         
+        console.log(`📝 Processing mention ${replied + 1}/${unansweredMentions.length}: ${mention.uri}`);
+        
         // Enhanced context with thread awareness
         const prompt = mention.reason || mention.text || "mention";
-        console.log(`Processing mention: ${JSON.stringify(mention, null, 2)}`);
+        console.log(`💭 Prompt text: "${prompt}"`);
         
-        const replyText = await composeReply({ 
-          personaKey, 
-          promptText: prompt, 
-          config,
-          isFromBot: mention.isFromBot,
-          priority: mention.priority
-        });
+        try {
+          const replyText = await composeReply({ 
+            personaKey, 
+            promptText: prompt, 
+            config,
+            isFromBot: mention.isFromBot,
+            priority: mention.priority
+          });
 
-        await replyToUri(agent, mention.uri, replyText, personaKey, getAdaptiveTone(personaKey));
-        markNotificationSeen(state, personaKey, mention.uri);
-        replied++;
-        console.log(`Replied to ${mention.isFromBot ? 'bot' : 'user'}: ${mention.uri}`);
+          console.log(`✅ Generated reply: "${replyText}"`);
+
+          await replyToUri(agent, mention.uri, replyText, personaKey, getAdaptiveTone(personaKey));
+          markNotificationSeen(state, personaKey, mention.uri);
+          replied++;
+          console.log(`🎉 Successfully replied to ${mention.isFromBot ? 'bot' : 'user'}: ${mention.uri}`);
+        } catch (replyError) {
+          console.error(`❌ Reply failed for ${mention.uri}:`, replyError?.message ?? replyError);
+        }
       }
+      
+      console.log(`🏁 Reply loop completed: ${replied} replies sent`);
     } catch (e) {
       console.warn(`Reply pass failed for ${personaKey}:`, e?.message ?? e);
     }
