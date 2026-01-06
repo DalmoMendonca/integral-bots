@@ -85,7 +85,7 @@ export default function BotFeed({ handle, searchQuery = '', reportPostsData }) {
   }, [handle, data?.posts, reportPostsData]);
 
   // Function to highlight search terms
-  const highlightText = useCallback((text, query) => {
+  const highlightText = (text, query) => {
     if (!query.trim()) return text;
     
     const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
@@ -98,7 +98,7 @@ export default function BotFeed({ handle, searchQuery = '', reportPostsData }) {
         part
       )
     );
-  }, []);
+  };
 
   async function load() {
     if (!isRefreshing) setLoading(true);

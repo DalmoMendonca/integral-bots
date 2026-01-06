@@ -1,19 +1,19 @@
 'use client';
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState } from 'react';
 import BotFeed from './BotFeed';
 
 export default function BotGrid({ handles }) {
   const [query, setQuery] = useState('');
   const [allPostsData, setAllPostsData] = useState({});
 
-  // Callback for child components to report their posts data
-  const reportPostsData = useCallback((handle, posts) => {
+  // Function for child components to report their posts data
+  const reportPostsData = (handle, posts) => {
     setAllPostsData(prev => ({
       ...prev,
       [handle]: posts
     }));
-  }, []);
+  };
 
   // Filter handles based on persona search (keep existing functionality)
   const filteredHandles = useMemo(() => {
