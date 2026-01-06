@@ -301,9 +301,8 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
     const conversationLength = conversation ? conversation.length + 1 : 0;
     const textBudget = 300 - urlLength - conversationLength - 5; // 5 char safety margin
 
-    // Get learning recommendations
-    const recommendations = performanceTracker.getAdaptiveRecommendations(personaKey);
-    const learningContext = generateLearningContext(recommendations);
+    // Simplified learning context since we removed complex performance tracking
+    const learningContext = "";
 
     const input = [
         personaPrompt,
