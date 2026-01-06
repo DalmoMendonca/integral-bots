@@ -851,7 +851,7 @@ async function generateViralResponse(personaKey, contentAnalysis, personaInsight
         "  'viral_elements': ['element1', 'element2'],",
         "  'engagement_prediction': 'low/medium/high',",
         "  'controversy_level': 'safe/moderate/risky'",
-        "  'tagging_strategy': 'continue/loop-in/end'"
+        "  'tagging_strategy': 'continue/loop-in/end'",
         "}"
     ].join("\n");
 

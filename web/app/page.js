@@ -1,3 +1,5 @@
+'use client';
+
 import BotGrid from './components/BotGrid';
 
 export default function Page() {
