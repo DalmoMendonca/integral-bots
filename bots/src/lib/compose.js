@@ -598,8 +598,13 @@ async function generatePersonaInsights(personaKey, contentAnalysis) {
 
         const insightsText = resp.output_text?.trim() || "{}";
         
-        // Clean up potential JSON parsing issues
-        const cleanedInsights = insightsText.replace(/```json\s*|\`\`\`|```/g, '').trim();
+        // More robust JSON parsing - handle various formats
+        let cleanedInsights = insightsText
+            .replace(/```(?:json)?\s*[\r\n]*([\s\S]*?)```/g, '$1') // Remove code blocks
+            .replace(/```(?:g)?\s*([\s\S]*?)```/g, '$1') // Remove generic code blocks
+            .replace(/^[\s`'"]+|[\s`'"]+$/g, '') // Remove leading/trailing quotes
+            .replace(/[\r\n]+/g, ' ') // Clean up newlines
+            .trim();
         
         console.log(`🎭 Persona insights generated for ${personaKey}`);
         return JSON.parse(cleanedInsights);
