@@ -67,6 +67,10 @@ async function run() {
         const prompt = mention.reason || mention.text || "mention";
         console.log(`💭 Prompt text: "${prompt}"`);
         
+        // Calculate reply count and conversation depth from state
+        const replyCount = state?.bots?.[personaKey]?.repliedTo?.length || 0;
+        const conversationDepth = 1; // Could be enhanced by tracking thread depth
+        
         try {
           const replyText = await composeReply({ 
             personaKey, 
@@ -75,7 +79,10 @@ async function run() {
             isFromBot: mention.isFromBot,
             priority: mention.priority,
             originalPostAuthor: mention.author?.handle,
-            originalPostUri: mention.uri
+            originalPostUri: mention.uri,
+            replyCount: replyCount,
+            conversationDepth: conversationDepth,
+            allHandles: allHandles // Pass all bot handles for intelligent selection
           });
 
           console.log(`✅ Generated reply: "${replyText}"`);

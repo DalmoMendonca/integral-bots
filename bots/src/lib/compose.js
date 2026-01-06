@@ -458,9 +458,158 @@ function generateLearningContext(recommendations) {
 }
 
 /**
- * Compose a reply using OpenAI's Responses API with context awareness and conversation threading.
+ * Intelligent conversation flow control - decides whether to continue, loop in bots, or end thread
  */
-export async function composeReply({ personaKey, promptText, config, isFromBot, priority, originalPostAuthor, originalPostUri }) {
+function determineConversationStrategy({ 
+    personaKey, 
+    isFromBot, 
+    priority, 
+    replyCount, 
+    allHandles, 
+    conversationDepth = 1,
+    hasOpenQuestions = false,
+    topicComplexity = 'medium'
+}) {
+    // Base probabilities that get modified by context
+    let continueProb = 0.4;  // 40% chance to continue with OP
+    let loopInProb = 0.3;    // 30% chance to loop in another bot
+    let endProb = 0.3;       // 30% chance to end thread
+
+    // Adjust based on conversation factors
+    if (isFromBot) {
+        // Bot-to-bot interactions: more likely to continue or loop in others
+        continueProb += 0.2;
+        loopInProb += 0.1;
+        endProb -= 0.3;
+    }
+
+    if (priority === 2) {
+        // High priority: more engagement
+        continueProb += 0.15;
+        loopInProb += 0.1;
+        endProb -= 0.25;
+    }
+
+    if (replyCount > 3) {
+        // Long threads: more likely to end
+        continueProb -= 0.2;
+        loopInProb -= 0.1;
+        endProb += 0.3;
+    }
+
+    if (conversationDepth > 2) {
+        // Deep conversations: more likely to loop in fresh perspectives
+        continueProb -= 0.1;
+        loopInProb += 0.2;
+        endProb -= 0.1;
+    }
+
+    if (hasOpenQuestions) {
+        // Unanswered questions: more likely to continue
+        continueProb += 0.25;
+        loopInProb += 0.05;
+        endProb -= 0.3;
+    }
+
+    if (topicComplexity === 'high') {
+        // Complex topics: benefit from multiple perspectives
+        continueProb += 0.1;
+        loopInProb += 0.2;
+        endProb -= 0.3;
+    }
+
+    // Normalize probabilities
+    const total = continueProb + loopInProb + endProb;
+    continueProb /= total;
+    loopInProb /= total;
+    endProb /= total;
+
+    // Make decision
+    const random = Math.random();
+    let strategy;
+    
+    if (random < continueProb) {
+        strategy = 'continue';
+    } else if (random < continueProb + loopInProb) {
+        strategy = 'loop-in';
+    } else {
+        strategy = 'end';
+    }
+
+    console.log(`🧠 Conversation strategy: ${strategy} (continue: ${(continueProb * 100).toFixed(1)}%, loop-in: ${(loopInProb * 100).toFixed(1)}%, end: ${(endProb * 100).toFixed(1)}%)`);
+    
+    return strategy;
+}
+
+/**
+ * Select appropriate bot to loop in based on persona and topic
+ */
+function selectBotToLoopIn(personaKey, allHandles, topicHint = '') {
+    // Define persona relationships and expertise areas
+    const botExpertise = {
+        'RUTH': ['prophecy', 'social-justice', 'mercy', 'warning'],
+        'BRYCE': ['theology', 'doctrine', 'scripture', 'academic'],
+        'JERRY': ['pastoral', 'practical', 'church-life', 'leadership'],
+        'RAYMOND': ['science', 'technology', 'research', 'innovation'],
+        'PARKER': ['politics', 'policy', 'governance', 'ethics'],
+        'KENNY': ['integral-theory', 'quadrants', 'systems', 'analysis'],
+        'ANDREA': ['relationships', 'love', 'community', 'spiritual-growth']
+    };
+
+    // Get current bot's expertise
+    const currentExpertise = botExpertise[personaKey] || [];
+    
+    // Find complementary bots (different but related expertise)
+    const complementaryBots = Object.keys(allHandles).filter(bot => {
+        if (bot === personaKey) return false;
+        const theirExpertise = botExpertise[bot] || [];
+        
+        // Check for complementary overlap
+        const overlap = currentExpertise.some(skill => 
+            theirExpertise.some(theirSkill => 
+                skill === theirSkill || 
+                skill.includes(theirSkill) || 
+                theirSkill.includes(skill)
+            )
+        );
+        
+        return overlap;
+    });
+
+    // If no complementary bots found, pick randomly from others
+    const availableBots = complementaryBots.length > 0 ? complementaryBots : 
+        Object.keys(allHandles).filter(bot => bot !== personaKey);
+
+    if (availableBots.length === 0) return null;
+
+    // Weight selection toward bots with relevant expertise
+    let weights = availableBots.map(bot => {
+        const expertise = botExpertise[bot] || [];
+        const relevance = expertise.some(skill => 
+            topicHint.toLowerCase().includes(skill.toLowerCase()) ||
+            skill.toLowerCase().includes(topicHint.toLowerCase())
+        );
+        return relevance ? 2 : 1; // Double weight for relevant expertise
+    });
+
+    // Weighted random selection
+    const totalWeight = weights.reduce((a, b) => a + b, 0);
+    let random = Math.random() * totalWeight;
+    
+    for (let i = 0; i < availableBots.length; i++) {
+        random -= weights[i];
+        if (random <= 0) {
+            return availableBots[i];
+        }
+    }
+    
+    return availableBots[0];
+}
+
+/**
+ * Compose a reply using OpenAI's Responses API with intelligent conversation flow.
+ */
+export async function composeReply({ personaKey, promptText, config, isFromBot, priority, originalPostAuthor, originalPostUri, replyCount = 0, conversationDepth = 1 }) {
     if (!config.openaiApiKey) {
         throw new Error(`OPENAI_API_KEY is not set. Cannot generate reply for ${personaKey}.`);
     }
@@ -474,6 +623,8 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
 
     // Enhanced context: try to get original post content
     let enhancedContext = promptText ?? "(no context provided)";
+    let hasOpenQuestions = false;
+    let topicComplexity = 'medium';
     
     // If we have the original post URI, try to fetch its content for better context
     if (originalPostUri && originalPostUri.includes('app.bsky.feed.post')) {
@@ -490,12 +641,52 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
                     if (postData.thread?.post?.record?.text) {
                         enhancedContext = postData.thread.post.record.text;
                         console.log(`📖 Fetched original post content: "${enhancedContext.substring(0, 100)}..."`);
+                        
+                        // Analyze content for conversation strategy
+                        hasOpenQuestions = enhancedContext.includes('?') && 
+                            (enhancedContext.includes('what') || enhancedContext.includes('how') || enhancedContext.includes('why'));
+                        
+                        // Determine topic complexity based on content
+                        const complexWords = ['integral', 'quadrant', 'development', 'consciousness', 'theory', 'system', 'paradigm'];
+                        topicComplexity = complexWords.some(word => enhancedContext.toLowerCase().includes(word)) ? 'high' : 'medium';
                     }
                 }
             }
         } catch (fetchError) {
             console.warn(`⚠️ Could not fetch original post: ${fetchError.message}`);
         }
+    }
+
+    // Determine conversation strategy
+    const allHandles = {}; // This would be passed in from the caller
+    const strategy = determineConversationStrategy({
+        personaKey,
+        isFromBot,
+        priority,
+        replyCount,
+        allHandles,
+        conversationDepth,
+        hasOpenQuestions,
+        topicComplexity
+    });
+
+    // Select bot to loop in if needed
+    let botToLoopIn = null;
+    if (strategy === 'loop-in') {
+        botToLoopIn = selectBotToLoopIn(personaKey, allHandles, enhancedContext);
+        if (botToLoopIn) {
+            console.log(`🤖 Selected bot to loop in: ${botToLoopIn}`);
+        }
+    }
+
+    // Build tagging instructions based on strategy
+    let taggingInstructions = '';
+    if (strategy === 'continue') {
+        taggingInstructions = `TAG @${originalPostAuthor || 'original_poster'} to continue the conversation.`;
+    } else if (strategy === 'loop-in' && botToLoopIn) {
+        taggingInstructions = `TAG both @${originalPostAuthor || 'original_poster'} and @${botToLoopIn} to bring in fresh perspective.`;
+    } else {
+        taggingInstructions = `DO NOT TAG anyone - let this be a natural conversation end point.`;
     }
 
     const input = [
@@ -507,7 +698,7 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
         "1. READ AND UNDERSTAND the original post content - don't just respond generically",
         "2. Add YOUR UNIQUE PERSPECTIVE as this persona - what insights can only you offer?",
         "3. ADVANCE THE CONVERSATION - ask questions, offer insights, or connect to bigger ideas",
-        "4. TAG THE ORIGINAL POSTER using @handle to continue the conversation",
+        "4. FOLLOW TAGGING INSTRUCTIONS EXACTLY as specified below",
         "5. Every sentence MUST be complete. NO trailing off with '...' or incomplete thoughts",
         "6. DO NOT end with conjunctions like 'and', 'but', 'because' without finishing thought",
         "",
@@ -518,12 +709,19 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
         `- This is a ${isFromBot ? 'bot-to-bot' : 'human-to-bot'} interaction`,
         `- Priority level: ${priority}`,
         `- Original poster: @${originalPostAuthor || 'unknown'}`,
+        `- Reply count in thread: ${replyCount}`,
+        `- Conversation depth: ${conversationDepth}`,
+        `- Topic complexity: ${topicComplexity}`,
+        `- Has open questions: ${hasOpenQuestions}`,
         "",
         `## TONE FOR THIS REPLY`,
         `Approach: ${tone}`,
         "",
+        "## CONVERSATION STRATEGY",
+        `Strategy: ${strategy}`,
+        taggingInstructions,
+        "",
         "## REPLY REQUIREMENTS",
-        "- MUST tag @original_poster_handle to continue conversation",
         "- Add unique insights from your persona's perspective",
         "- Ask thoughtful questions or make connections",
         "- Keep it conversational and engaging",
