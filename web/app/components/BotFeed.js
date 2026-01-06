@@ -18,7 +18,7 @@ function timeAgo(iso) {
   }
 }
 
-// Persona colors and stages
+// Persona colors and stages with actual handle mappings
 const PERSONAS = {
   ruth: { stage: 'Miracle', color: '#d81b60', bgColor: '#fce4ec', borderColor: '#f8bbd9' },
   bryce: { stage: 'Warrior', color: '#e53935', bgColor: '#ffebee', borderColor: '#ffcdd2' },
@@ -29,13 +29,33 @@ const PERSONAS = {
   andrea: { stage: 'Holistic', color: '#26c6da', bgColor: '#e0f7fa', borderColor: '#b2ebf2' }
 };
 
+// Direct handle-to-persona mapping for accuracy
+const HANDLE_MAPPINGS = {
+  'sisterruthmartinez.bsky.social': 'ruth',
+  'thebrycepowell.bsky.social': 'bryce', 
+  'revjerryjohnson.bsky.social': 'jerry',
+  'drraymondmoore.bsky.social': 'raymond',
+  'p42k32.bsky.social': 'parker',
+  'kennysmithjr.bsky.social': 'kenny',
+  'mrsandreasimmons.bsky.social': 'andrea'
+};
+
 function getPersonaInfo(handle) {
   const handleLower = handle.toLowerCase();
+  
+  // First try exact handle mapping
+  if (HANDLE_MAPPINGS[handleLower]) {
+    const personaKey = HANDLE_MAPPINGS[handleLower];
+    return { name: personaKey.charAt(0).toUpperCase() + personaKey.slice(1), ...PERSONAS[personaKey] };
+  }
+  
+  // Fallback to pattern matching for any new handles
   for (const [key, info] of Object.entries(PERSONAS)) {
     if (handleLower.includes(key)) {
       return { name: key.charAt(0).toUpperCase() + key.slice(1), ...info };
     }
   }
+  
   return { name: 'Unknown', stage: 'Unknown', color: '#64748b', bgColor: '#f8fafc', borderColor: '#e2e8f0' };
 }
 

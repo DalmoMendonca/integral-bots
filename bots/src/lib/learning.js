@@ -219,15 +219,19 @@ export class PerformanceTracker {
    * Get adaptive recommendations for a persona
    */
   getAdaptiveRecommendations(personaKey) {
-    this.state = loadState();
+    // Defensive check - if state is not loaded, return empty recommendations
+    if (!this.state) {
+      this.state = loadState();
+    }
     
     if (!this.state.performance?.[personaKey]) {
       return this.getDefaultRecommendations(personaKey);
     }
 
     const perf = this.state.performance[personaKey];
-    const learning = perf.learningData;
+    const learning = perf.learningData || {};
     
+    // Ensure all arrays exist
     const recommendations = {
       preferredTones: [],
       avoidedTones: [],
@@ -237,25 +241,36 @@ export class PerformanceTracker {
       interactionStrategies: []
     };
 
-    // Tone recommendations
-    Object.entries(learning.toneEffectiveness).forEach(([tone, data]) => {
-      if (data.effectiveness > 1.2) {
-        recommendations.preferredTones.push({ tone, effectiveness: data.effectiveness });
-      } else if (data.effectiveness < 0.8) {
-        recommendations.avoidedTones.push({ tone, effectiveness: data.effectiveness });
+    // Defensive checks for learning data
+    if (learning && typeof learning === 'object') {
+      // Tone recommendations
+      if (learning.toneEffectiveness && typeof learning.toneEffectiveness === 'object') {
+        Object.entries(learning.toneEffectiveness).forEach(([tone, data]) => {
+          if (data && typeof data === 'object' && data.effectiveness > 1.2) {
+            recommendations.preferredTones.push({ tone, effectiveness: data.effectiveness });
+          } else if (data && typeof data === 'object' && data.effectiveness < 0.8) {
+            recommendations.avoidedTones.push({ tone, effectiveness: data.effectiveness });
+          }
+        });
       }
-    });
 
-    // Content recommendations
-    Object.entries(learning.contentEffectiveness).forEach(([keyword, data]) => {
-      if (data.effectiveness > 1.3 && data.uses >= 2) {
-        recommendations.preferredContent.push({ keyword, effectiveness: data.effectiveness });
+      // Content recommendations
+      if (learning.contentEffectiveness && typeof learning.contentEffectiveness === 'object') {
+        Object.entries(learning.contentEffectiveness).forEach(([keyword, data]) => {
+          if (data && typeof data === 'object' && data.effectiveness > 1.3 && data.uses >= 2) {
+            recommendations.preferredContent.push({ keyword, effectiveness: data.effectiveness });
+          }
+        });
       }
-    });
 
-    // Pattern recommendations
-    recommendations.effectivePatterns = learning.successfulPatterns.slice(0, 5);
-    recommendations.ineffectivePatterns = learning.failedPatterns.slice(0, 5);
+      // Pattern recommendations (with array checks)
+      if (Array.isArray(learning.successfulPatterns)) {
+        recommendations.effectivePatterns = learning.successfulPatterns.slice(0, 5);
+      }
+      if (Array.isArray(learning.failedPatterns)) {
+        recommendations.ineffectivePatterns = learning.failedPatterns.slice(0, 5);
+      }
+    }
 
     return recommendations;
   }

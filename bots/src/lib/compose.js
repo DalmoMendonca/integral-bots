@@ -427,21 +427,26 @@ REQUIREMENTS:
 }
 
 function generateLearningContext(recommendations) {
+    // Defensive check - if no recommendations or invalid data, return fallback
+    if (!recommendations || typeof recommendations !== 'object') {
+        return "No performance data available yet - use your best judgment.";
+    }
+    
     let context = "Based on your performance data:\n";
     
-    if (recommendations.preferredTones.length > 0) {
+    if (recommendations.preferredTones && recommendations.preferredTones.length > 0) {
         context += `- Your most effective tones: ${recommendations.preferredTones.slice(0, 3).map(t => t.tone).join(', ')}\n`;
     }
     
-    if (recommendations.preferredContent.length > 0) {
+    if (recommendations.preferredContent && recommendations.preferredContent.length > 0) {
         context += `- Topics that resonate well: ${recommendations.preferredContent.slice(0, 3).map(c => c.keyword).join(', ')}\n`;
     }
     
-    if (recommendations.effectivePatterns.length > 0) {
+    if (recommendations.effectivePatterns && recommendations.effectivePatterns.length > 0) {
         context += `- Effective patterns: ${recommendations.effectivePatterns.slice(0, 3).join(', ')}\n`;
     }
     
-    if (recommendations.ineffectivePatterns.length > 0) {
+    if (recommendations.ineffectivePatterns && recommendations.ineffectivePatterns.length > 0) {
         context += `- Avoid these patterns: ${recommendations.ineffectivePatterns.slice(0, 2).join(', ')}\n`;
     }
     

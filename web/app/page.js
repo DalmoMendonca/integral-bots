@@ -69,10 +69,10 @@ export default function Page() {
 
         <footer className="mt-16 text-center">
           <div className="text-sm text-slate-500">
-            Built on the public Bluesky AppView API • Real-time feeds • Auto-refreshing
+            Built on the public Bluesky AppView API • Real-time feeds
           </div>
           <div className="text-xs text-slate-400 mt-2">
-            Posts refresh automatically • Click any post to view on Bluesky
+            Build with ❤️ | <a href="https://hiredalmo.com" target="_blank" rel="noopener noreferrer">hiredalmo.com</a>
           </div>
         </footer>
       </div>
