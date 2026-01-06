@@ -1,9 +1,10 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-01-06T15:53:38.829Z",
+  "lastRunUtc": "2026-01-06T15:59:12.571Z",
   "bots": {
     "RUTH": {
       "seen": [
+        "https://relevantmagazine.com/life5/wellness/the-difference-between-dieting-and-fasting/",
         "https://relevantmagazine.com/culture/10-sci-fi-movies-can-help-shape-your-theology/",
         "https://www.faithwire.com/2025/12/18/shock-data-after-charlie-kirk-assassination-how-americans-really-responded-spiritually-politically/",
         "https://www.christiancentury.org/sunday-s-coming/epiphany-misener",
@@ -23,6 +24,7 @@
     },
     "BRYCE": {
       "seen": [
+        "https://relevantmagazine.com/culture/10-sci-fi-movies-can-help-shape-your-theology/",
         "https://relevantmagazine.com/culture/music/daniel-caesar-performs-his-most-faith-focused-album-on-tiny-desk/",
         "https://www.christiancentury.org/online-columnists/franklin-graham-preaches",
         "https://www.thepublicdiscourse.com/2025/12/99817/",
@@ -43,6 +45,7 @@
     },
     "JERRY": {
       "seen": [
+        "https://www.christiancentury.org/lectionary/january-11-baptism-isaiah-42-1-9-matthew-3-13-17",
         "https://www.christiancentury.org/sunday-s-coming/epiphany-misener",
         "https://www.christiancentury.org/online-columnists/franklin-graham-preaches",
         "https://www.thepublicdiscourse.com/2025/12/99794/",
@@ -64,6 +67,7 @@
     },
     "RAYMOND": {
       "seen": [
+        "https://relevantmagazine.com/culture/music/daniel-caesar-performs-his-most-faith-focused-album-on-tiny-desk/",
         "https://www.christiancentury.org/lectionary/january-11-baptism-isaiah-42-1-9-matthew-3-13-17",
         "https://www.npr.org/2026/01/05/nx-s1-5666904/firestorm-jacob-soboroff-palisades-eaton",
         "https://www.christiancentury.org/news/israel-s-ban-humanitarian-relief-groups-will-severely-impact-aid-gaza-letter-warns",
@@ -85,6 +89,7 @@
     },
     "KENNY": {
       "seen": [
+        "trend:doug lamalfa",
         "https://relevantmagazine.com/culture/music/daniel-caesar-performs-his-most-faith-focused-album-on-tiny-desk/",
         "https://www.christiancentury.org/lectionary/january-11-baptism-isaiah-42-1-9-matthew-3-13-17",
         "https://www.christiancentury.org/news/israel-s-ban-humanitarian-relief-groups-will-severely-impact-aid-gaza-letter-warns",
@@ -105,6 +110,7 @@
     },
     "ANDREA": {
       "seen": [
+        "https://relevantmagazine.com/faith/what-gods-will-my-life/",
         "https://relevantmagazine.com/culture/10-sci-fi-movies-can-help-shape-your-theology/",
         "https://www.faithwire.com/2025/12/18/trump-grants-federal-workers-two-additional-christmas-holidays/",
         "https://www.christiancentury.org/poetry/evening-prayer-january-sight-jupiter",
@@ -125,6 +131,7 @@
     },
     "PARKER": {
       "seen": [
+        "https://www.vox.com/podcasts/474059/maduro-trump-oil-cuba-latin-america",
         "https://relevantmagazine.com/culture/10-sci-fi-movies-can-help-shape-your-theology/",
         "https://www.thegospelcoalition.org/article/grace-glorifies-christ/",
         "https://www.christiancentury.org/online-columnists/franklin-graham-preaches",
