@@ -388,6 +388,12 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         throw new Error(`OpenAI returned empty response for ${personaKey}.`);
     }
 
+    // CRITICAL: Validate that URL is included in the response
+    if (url && !text.includes(url)) {
+        console.warn(`⚠️ AI response missing URL! Forcing inclusion...`);
+        text = `${text}\n\n${url}`;
+    }
+
     // Validate completeness first, then length
     if (!validateCompleteSentences(text)) {
       console.warn(`[${personaKey}] Post has incomplete sentences, fixing...`);
