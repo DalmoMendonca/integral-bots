@@ -458,158 +458,145 @@ function generateLearningContext(recommendations) {
 }
 
 /**
- * Intelligent conversation flow control - decides whether to continue, loop in bots, or end thread
+ * Let AI intelligently decide conversation flow - no hardcoded logic needed
  */
-function determineConversationStrategy({ 
+async function determineConversationStrategyWithAI({ 
     personaKey, 
     isFromBot, 
     priority, 
     replyCount, 
-    allHandles, 
     conversationDepth = 1,
-    hasOpenQuestions = false,
-    topicComplexity = 'medium'
+    hasOpenQuestions,
+    topicComplexity,
+    originalPostContent,
+    allHandles
 }) {
-    // Base probabilities that get modified by context
-    let continueProb = 0.4;  // 40% chance to continue with OP
-    let loopInProb = 0.3;    // 30% chance to loop in another bot
-    let endProb = 0.3;       // 30% chance to end thread
+    const mod = await import("openai");
+    const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    // Adjust based on conversation factors
-    if (isFromBot) {
-        // Bot-to-bot interactions: more likely to continue or loop in others
-        continueProb += 0.2;
-        loopInProb += 0.1;
-        endProb -= 0.3;
+    const input = [
+        "You are an expert conversation analyst for an Integral Christianity bot system.",
+        "",
+        "## TASK",
+        "Analyze the conversation context and decide the best reply strategy:",
+        "",
+        "## OPTIONS",
+        "1. 'continue' - Reply to original poster only (@user)",
+        "2. 'loop-in' - Reply to original poster + tag one complementary bot (@user @bot)",  
+        "3. 'end' - Reply without tagging anyone (natural conversation end)",
+        "",
+        "## CONTEXT",
+        `- Current bot: ${personaKey}`,
+        `- Is bot-to-bot: ${isFromBot}`,
+        `- Priority: ${priority}`,
+        `- Reply count in thread: ${replyCount}`,
+        `- Conversation depth: ${conversationDepth}`,
+        `- Has open questions: ${hasOpenQuestions}`,
+        `- Topic complexity: ${topicComplexity}`,
+        "",
+        "## ORIGINAL POST CONTENT",
+        originalPostContent || "(no content available)",
+        "",
+        "## AVAILABLE BOTS TO LOOP IN",
+        Object.keys(allHandles).join(', '),
+        "",
+        "## DECISION CRITERIA",
+        "- Continue: Good for direct responses, unanswered questions, high priority",
+        "- Loop-in: Good for complex topics, multiple perspectives needed, fresh insights",
+        "- End: Good for long threads, resolved topics, natural conclusions",
+        "",
+        "RESPOND WITH ONLY ONE WORD: continue, loop-in, or end"
+    ].join("\n");
+
+    try {
+        const resp = await client.responses.create({
+            model: "gpt-4o-mini",
+            input: input,
+        });
+
+        const strategy = resp.output_text?.trim().toLowerCase();
+        const validStrategies = ['continue', 'loop-in', 'end'];
+        
+        const finalStrategy = validStrategies.includes(strategy) ? strategy : 'continue';
+        
+        console.log(`🧠 AI conversation strategy: ${finalStrategy}`);
+        return finalStrategy;
+    } catch (error) {
+        console.warn(`AI strategy decision failed: ${error.message}, falling back to continue`);
+        return 'continue';
     }
-
-    if (priority === 2) {
-        // High priority: more engagement
-        continueProb += 0.15;
-        loopInProb += 0.1;
-        endProb -= 0.25;
-    }
-
-    if (replyCount > 3) {
-        // Long threads: more likely to end
-        continueProb -= 0.2;
-        loopInProb -= 0.1;
-        endProb += 0.3;
-    }
-
-    if (conversationDepth > 2) {
-        // Deep conversations: more likely to loop in fresh perspectives
-        continueProb -= 0.1;
-        loopInProb += 0.2;
-        endProb -= 0.1;
-    }
-
-    if (hasOpenQuestions) {
-        // Unanswered questions: more likely to continue
-        continueProb += 0.25;
-        loopInProb += 0.05;
-        endProb -= 0.3;
-    }
-
-    if (topicComplexity === 'high') {
-        // Complex topics: benefit from multiple perspectives
-        continueProb += 0.1;
-        loopInProb += 0.2;
-        endProb -= 0.3;
-    }
-
-    // Normalize probabilities
-    const total = continueProb + loopInProb + endProb;
-    continueProb /= total;
-    loopInProb /= total;
-    endProb /= total;
-
-    // Make decision
-    const random = Math.random();
-    let strategy;
-    
-    if (random < continueProb) {
-        strategy = 'continue';
-    } else if (random < continueProb + loopInProb) {
-        strategy = 'loop-in';
-    } else {
-        strategy = 'end';
-    }
-
-    console.log(`🧠 Conversation strategy: ${strategy} (continue: ${(continueProb * 100).toFixed(1)}%, loop-in: ${(loopInProb * 100).toFixed(1)}%, end: ${(endProb * 100).toFixed(1)}%)`);
-    
-    return strategy;
 }
 
 /**
- * Select appropriate bot to loop in based on persona and topic
+ * Let AI select the best bot to loop in based on context
  */
-function selectBotToLoopIn(personaKey, allHandles, topicHint = '') {
-    // Define persona relationships and expertise areas
-    const botExpertise = {
-        'RUTH': ['prophecy', 'social-justice', 'mercy', 'warning'],
-        'BRYCE': ['theology', 'doctrine', 'scripture', 'academic'],
-        'JERRY': ['pastoral', 'practical', 'church-life', 'leadership'],
-        'RAYMOND': ['science', 'technology', 'research', 'innovation'],
-        'PARKER': ['politics', 'policy', 'governance', 'ethics'],
-        'KENNY': ['integral-theory', 'quadrants', 'systems', 'analysis'],
-        'ANDREA': ['relationships', 'love', 'community', 'spiritual-growth']
-    };
+async function selectBotToLoopInWithAI({ 
+    personaKey, 
+    originalPostContent, 
+    allHandles 
+}) {
+    const mod = await import("openai");
+    const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    // Get current bot's expertise
-    const currentExpertise = botExpertise[personaKey] || [];
+    const availableBots = Object.keys(allHandles).filter(bot => bot !== personaKey);
     
-    // Find complementary bots (different but related expertise)
-    const complementaryBots = Object.keys(allHandles).filter(bot => {
-        if (bot === personaKey) return false;
-        const theirExpertise = botExpertise[bot] || [];
-        
-        // Check for complementary overlap
-        const overlap = currentExpertise.some(skill => 
-            theirExpertise.some(theirSkill => 
-                skill === theirSkill || 
-                skill.includes(theirSkill) || 
-                theirSkill.includes(skill)
-            )
-        );
-        
-        return overlap;
-    });
-
-    // If no complementary bots found, pick randomly from others
-    const availableBots = complementaryBots.length > 0 ? complementaryBots : 
-        Object.keys(allHandles).filter(bot => bot !== personaKey);
-
     if (availableBots.length === 0) return null;
 
-    // Weight selection toward bots with relevant expertise
-    let weights = availableBots.map(bot => {
-        const expertise = botExpertise[bot] || [];
-        const relevance = expertise.some(skill => 
-            topicHint.toLowerCase().includes(skill.toLowerCase()) ||
-            skill.toLowerCase().includes(topicHint.toLowerCase())
-        );
-        return relevance ? 2 : 1; // Double weight for relevant expertise
-    });
+    const input = [
+        "You are an expert at selecting complementary perspectives for Integral Christianity discussions.",
+        "",
+        "## TASK",
+        "Select the best bot to loop into this conversation based on the topic and current bot:",
+        "",
+        `## CURRENT BOT: ${personaKey}`,
+        "",
+        "## AVAILABLE BOTS",
+        "- RUTH: Prophecy, social justice, mercy, warnings",
+        "- BRYCE: Theology, doctrine, scripture, academic",
+        "- JERRY: Pastoral, practical, church life, leadership", 
+        "- RAYMOND: Science, technology, research, innovation",
+        "- PARKER: Politics, policy, governance, ethics",
+        "- KENNY: Integral theory, quadrants, systems, analysis",
+        "- ANDREA: Relationships, love, community, spiritual growth",
+        "",
+        "## ORIGINAL POST CONTENT",
+        originalPostContent || "(no content available)",
+        "",
+        "## SELECTION CRITERIA",
+        "- Choose bot with complementary expertise to current bot",
+        "- Consider which perspective would add most value",
+        "- Avoid redundancy with current bot's focus",
+        "",
+        "RESPOND WITH ONLY THE BOT NAME (e.g., 'BRYCE', 'RUTH', etc.)"
+    ].join("\n");
 
-    // Weighted random selection
-    const totalWeight = weights.reduce((a, b) => a + b, 0);
-    let random = Math.random() * totalWeight;
-    
-    for (let i = 0; i < availableBots.length; i++) {
-        random -= weights[i];
-        if (random <= 0) {
-            return availableBots[i];
+    try {
+        const resp = await client.responses.create({
+            model: "gpt-4o-mini",
+            input: input,
+        });
+
+        const selectedBot = resp.output_text?.trim().toUpperCase();
+        
+        if (availableBots.includes(selectedBot)) {
+            console.log(`🤖 AI selected bot to loop in: ${selectedBot}`);
+            return selectedBot;
         }
+        
+        // Fallback to random selection
+        return availableBots[Math.floor(Math.random() * availableBots.length)];
+    } catch (error) {
+        console.warn(`AI bot selection failed: ${error.message}, falling back to random`);
+        return availableBots[Math.floor(Math.random() * availableBots.length)];
     }
-    
-    return availableBots[0];
 }
 
 /**
- * Compose a reply using OpenAI's Responses API with intelligent conversation flow.
+ * Compose a reply using OpenAI's Responses API with AI-driven conversation flow.
  */
-export async function composeReply({ personaKey, promptText, config, isFromBot, priority, originalPostAuthor, originalPostUri, replyCount = 0, conversationDepth = 1 }) {
+export async function composeReply({ personaKey, promptText, config, isFromBot, priority, originalPostAuthor, originalPostUri, replyCount = 0, conversationDepth = 1, allHandles = {} }) {
     if (!config.openaiApiKey) {
         throw new Error(`OPENAI_API_KEY is not set. Cannot generate reply for ${personaKey}.`);
     }
@@ -623,8 +610,6 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
 
     // Enhanced context: try to get original post content
     let enhancedContext = promptText ?? "(no context provided)";
-    let hasOpenQuestions = false;
-    let topicComplexity = 'medium';
     
     // If we have the original post URI, try to fetch its content for better context
     if (originalPostUri && originalPostUri.includes('app.bsky.feed.post')) {
@@ -641,14 +626,6 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
                     if (postData.thread?.post?.record?.text) {
                         enhancedContext = postData.thread.post.record.text;
                         console.log(`📖 Fetched original post content: "${enhancedContext.substring(0, 100)}..."`);
-                        
-                        // Analyze content for conversation strategy
-                        hasOpenQuestions = enhancedContext.includes('?') && 
-                            (enhancedContext.includes('what') || enhancedContext.includes('how') || enhancedContext.includes('why'));
-                        
-                        // Determine topic complexity based on content
-                        const complexWords = ['integral', 'quadrant', 'development', 'consciousness', 'theory', 'system', 'paradigm'];
-                        topicComplexity = complexWords.some(word => enhancedContext.toLowerCase().includes(word)) ? 'high' : 'medium';
                     }
                 }
             }
@@ -657,29 +634,30 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
         }
     }
 
-    // Determine conversation strategy
-    const allHandles = {}; // This would be passed in from the caller
-    const strategy = determineConversationStrategy({
+    // Let AI decide conversation strategy
+    const strategy = await determineConversationStrategyWithAI({
         personaKey,
         isFromBot,
         priority,
         replyCount,
-        allHandles,
         conversationDepth,
-        hasOpenQuestions,
-        topicComplexity
+        hasOpenQuestions: enhancedContext.includes('?'),
+        topicComplexity: 'medium', // AI will figure this out from content
+        originalPostContent: enhancedContext,
+        allHandles
     });
 
-    // Select bot to loop in if needed
+    // Let AI select bot to loop in if needed
     let botToLoopIn = null;
     if (strategy === 'loop-in') {
-        botToLoopIn = selectBotToLoopIn(personaKey, allHandles, enhancedContext);
-        if (botToLoopIn) {
-            console.log(`🤖 Selected bot to loop in: ${botToLoopIn}`);
-        }
+        botToLoopIn = await selectBotToLoopInWithAI({
+            personaKey,
+            originalPostContent: enhancedContext,
+            allHandles
+        });
     }
 
-    // Build tagging instructions based on strategy
+    // Build tagging instructions based on AI decision
     let taggingInstructions = '';
     if (strategy === 'continue') {
         taggingInstructions = `TAG @${originalPostAuthor || 'original_poster'} to continue the conversation.`;
