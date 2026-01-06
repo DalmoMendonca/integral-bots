@@ -5,9 +5,6 @@ This repo ships two things:
 1) **7 Bluesky bots** (Miracle → Holistic) that post hourly at **:20** and only reply when they’re explicitly tagged (opt‑in).
 2) A **simple, beautiful landing page** that shows the latest posts from each bot.
 
-## Why 7?
-Your source file defines 7 stage-personas (Ruth, Bryce, Jerry, Raymond, Parker, Kenny, Andrea). Add an 8th later if you want (e.g., Nondual/Meta-orthodox).
-
 ---
 
 ## Part A — Bots (runs free on GitHub Actions)
@@ -40,8 +37,7 @@ Add:
 - `BSKY_KENNY_HANDLE`, `BSKY_KENNY_APP_PASSWORD`
 - `BSKY_ANDREA_HANDLE`, `BSKY_ANDREA_APP_PASSWORD`
 
-Optional (NOT free): `OPENAI_API_KEY` and `OPENAI_MODEL`.
-If you don’t set these, the bots use a free template generator.
+`OPENAI_API_KEY` and `OPENAI_MODEL`.
 
 ### 4) Turn on Actions
 Go to **Actions**, enable workflows.
@@ -51,10 +47,10 @@ It will also run automatically hourly at **:20**.
 
 ---
 
-## Part B — Landing page (deploy free on Vercel)
+## Part B — Landing page (deploy free on Netlify)
 
 ### Deploy
-- Create a Vercel project pointing at `/web`
+- Create a Netlify project pointing at `/web`
 - Add one env var: `NEXT_PUBLIC_BOT_HANDLES` (comma-separated handles, no @)
   Example:
   `ruth.bot.bsky.social,bryce.bot.bsky.social,...`
