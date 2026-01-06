@@ -93,7 +93,7 @@ export async function createPost(agent, text, personaKey, tone, topic) {
   }
 
   const result = await agent.post(postOptions);
-
+  
   // Track post creation for learning
   performanceTracker.trackPostPerformance(personaKey, result.uri, {
     tone: tone,
@@ -104,7 +104,11 @@ export async function createPost(agent, text, personaKey, tone, topic) {
     shares: 0,
     replies: 0
   });
-
+  
+  console.log(`✅ Post created for ${personaKey}: ${result.uri}`);
+  console.log(`📝 Post content: ${text.slice(0, 100)}...`);
+  console.log(`🔗 Embed: ${postOptions.embed ? 'YES' : 'NO'}`);
+  
   return result;
 }
 
