@@ -108,16 +108,12 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         mention ? `OPTIONAL_MENTION: ${mention}` : `OPTIONAL_MENTION: (none)`,
       ].join("\n");
 
-      const resp = await client.chat.completions.create({
+      const resp = await client.responses.create({
         model: config.openaiModel,
-        messages: [
-          { role: "system", content: sys },
-          { role: "user", content: user },
-        ],
-        temperature: 0.9,
+        input: sys + "\n\n" + user,
       });
 
-      let text = resp.choices?.[0]?.message?.content?.trim() ?? "";
+      let text = resp.output_text?.trim() ?? "";
       if (text) {
         // Ensure the URL (if any) is present and on its own line at the end.
         if (url && !text.includes(url)) text = `${text}\n${url}`;
@@ -154,15 +150,12 @@ export async function composeReply({ personaKey, promptText, config }) {
         `Context (may be short): ${promptText ?? ""}`,
       ].join("\n");
 
-      const resp = await client.chat.completions.create({
+      const resp = await client.responses.create({
         model: config.openaiModel,
-        messages: [
-          { role: "system", content: sys },
-          { role: "user", content: user },
-        ]
+        input: sys + "\n\n" + user,
       });
 
-      const text = resp.choices?.[0]?.message?.content?.trim() ?? "";
+      const text = resp.output_text?.trim() ?? "";
       if (text) return clampText(text);
     } catch (e) {
       console.error(`OpenAI Reply Error (${personaKey}):`, e.message);
