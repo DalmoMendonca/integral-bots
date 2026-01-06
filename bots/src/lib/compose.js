@@ -82,7 +82,8 @@ function maybeMentionOtherBot(personaKey, allHandles) {
 export async function composePost({ personaKey, topic, config, allHandles }) {
   if (config.openaiApiKey) {
     try {
-      const { OpenAI } = await import("openai");
+      const mod = await import("openai");
+      const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
       const client = new OpenAI({ apiKey: config.openaiApiKey });
       const p = PERSONAS[personaKey];
 
@@ -122,7 +123,8 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         if (url && !text.includes(url)) text = `${text}\n${url}`;
         return clampPreserveUrl(text);
       }
-    } catch {
+    } catch (e) {
+      console.error(`OpenAI Error (${personaKey}):`, e.message);
       // fall through to template
     }
   }
@@ -136,14 +138,15 @@ export async function composeReply({ personaKey, promptText, config }) {
 
   if (config.openaiApiKey) {
     try {
-      const { OpenAI } = await import("openai");
+      const mod = await import("openai");
+      const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
       const client = new OpenAI({ apiKey: config.openaiApiKey });
 
       const sys = [
         `You are ${p.id}, an Integral Christianity persona at the "${p.stage}" stage.`,
         `Voice: ${p.voice}.`,
         `Stance: ${p.stance.join(" ")}`,
-        `Constraints: respectful; opt-in interaction; max ${MAX_CHARS} chars; ask one sincere question.`,
+        `Constraints: max ${MAX_CHARS} chars; ask one sincere question.`,
       ].join("\n");
 
       const user = [
@@ -156,13 +159,13 @@ export async function composeReply({ personaKey, promptText, config }) {
         messages: [
           { role: "system", content: sys },
           { role: "user", content: user },
-        ],
-        temperature: 0.9,
+        ]
       });
 
       const text = resp.choices?.[0]?.message?.content?.trim() ?? "";
       if (text) return clampText(text);
-    } catch {
+    } catch (e) {
+      console.error(`OpenAI Reply Error (${personaKey}):`, e.message);
       // ignore
     }
   }
