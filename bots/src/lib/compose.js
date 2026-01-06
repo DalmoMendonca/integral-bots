@@ -458,6 +458,216 @@ function generateLearningContext(recommendations) {
 }
 
 /**
+ * Layer 1: Deep content analysis of source material
+ */
+async function deepContentAnalysis(originalPostUri, linkedArticles = []) {
+    const mod = await import("openai");
+    const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    // Fetch original post content
+    let originalContent = "";
+    if (originalPostUri && originalPostUri.includes('app.bsky.feed.post')) {
+        try {
+            const postResponse = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.feed.getPost?uri=${encodeURIComponent(originalPostUri)}`);
+            if (postResponse.ok) {
+                const postData = await postResponse.json();
+                originalContent = postData.thread?.post?.record?.text || "";
+            }
+        } catch (error) {
+            console.warn(`Could not fetch original post: ${error.message}`);
+        }
+    }
+
+    // Extract linked article content (simplified for now)
+    let articleContent = "";
+    if (linkedArticles.length > 0) {
+        articleContent = "Linked articles available for analysis";
+    }
+
+    const input = [
+        "You are an expert theological analyst specializing in Integral Christianity and cultural analysis.",
+        "",
+        "## TASK",
+        "Perform deep content analysis of this material for generating intelligent conversation:",
+        "",
+        "## ORIGINAL POST CONTENT",
+        originalContent || "(No original content available)",
+        "",
+        "## LINKED ARTICLE CONTENT", 
+        articleContent || "(No linked articles available)",
+        "",
+        "## ANALYSIS REQUIREMENTS",
+        "Provide detailed analysis covering:",
+        "1. Core theological claims and their integral stage alignment",
+        "2. Controversial or provocative elements present",
+        "3. Unexplored angles and potential blind spots",
+        "4. Connections to broader cultural/spiritual trends",
+        "5. Potential for constructive disagreement",
+        "6. Viral-worthy insights or contradictions",
+        "",
+        "## OUTPUT FORMAT",
+        "Return JSON with:",
+        "{",
+        "  'theological_claims': ['claim1', 'claim2'],",
+        "  'integral_stage': 'green/amber/orange/turquoise',",
+        "  'controversy_points': ['point1', 'point2'],",
+        "  'blind_spots': ['spot1', 'spot2'],",
+        "  'cultural_connections': ['connection1', 'connection2'],",
+        "  'disagreement_potential': 'low/medium/high',",
+        "  'viral_insights': ['insight1', 'insight2']",
+        "}"
+    ].join("\n");
+
+    try {
+        const resp = await client.responses.create({
+            model: "gpt-4o-mini",
+            input: input,
+        });
+
+        const analysisText = resp.output_text?.trim() || "{}";
+        console.log(`📚 Deep content analysis completed`);
+        return JSON.parse(analysisText);
+    } catch (error) {
+        console.warn(`Content analysis failed: ${error.message}`);
+        return {
+            theological_claims: [],
+            integral_stage: 'green',
+            controversy_points: [],
+            blind_spots: [],
+            cultural_connections: [],
+            disagreement_potential: 'medium',
+            viral_insights: []
+        };
+    }
+}
+
+/**
+ * Layer 2: Generate persona-specific insights and blind spots
+ */
+async function generatePersonaInsights(personaKey, contentAnalysis) {
+    const mod = await import("openai");
+    const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    const persona = PERSONAS[personaKey];
+    
+    const input = [
+        `You are an expert on ${personaKey}'s psychological and theological perspective in Integral Christianity.`,
+        "",
+        "## PERSONA CONTEXT",
+        `- Name: ${personaKey}`,
+        `- Stage: ${persona.stage}`,
+        `- Voice: ${persona.voice}`,
+        `- Stance: ${persona.stance.join(', ')}`,
+        "",
+        "## CONTENT ANALYSIS",
+        JSON.stringify(contentAnalysis, null, 2),
+        "",
+        "## TASK",
+        `Generate ${personaKey}'s unique perspective on this content. Provide:`,
+        "1. 3 unique insights only this persona would notice",
+        "2. 2 blind spots this persona might have regarding this topic",
+        "3. 1 provocative question this persona would ask",
+        "4. 1 connection to broader integral theory",
+        "5. 1 potential growth edge for this persona",
+        "",
+        "## OUTPUT FORMAT",
+        "Return JSON with:",
+        "{",
+        "  'unique_insights': ['insight1', 'insight2', 'insight3'],",
+        "  'blind_spots': ['spot1', 'spot2'],",
+        "  'provocative_question': 'question',",
+        "  'integral_connection': 'connection',",
+        "  'growth_edge': 'edge',",
+        "  'controversy_stance': 'avoid/engage/challenge'",
+        "}"
+    ].join("\n");
+
+    try {
+        const resp = await client.responses.create({
+            model: "gpt-4o-mini",
+            input: input,
+        });
+
+        const insightsText = resp.output_text?.trim() || "{}";
+        console.log(`🎭 Persona insights generated for ${personaKey}`);
+        return JSON.parse(insightsText);
+    } catch (error) {
+        console.warn(`Persona insights failed: ${error.message}`);
+        return {
+            unique_insights: [],
+            blind_spots: [],
+            provocative_question: "",
+            integral_connection: "",
+            growth_edge: "",
+            controversy_stance: "engage"
+        };
+    }
+}
+
+/**
+ * Layer 3: Identify controversy and viral opportunities
+ */
+async function identifyControversyOpportunities(contentAnalysis, personaInsights) {
+    const mod = await import("openai");
+    const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    const input = [
+        "You are an expert at identifying constructive controversy and viral potential in theological discussions.",
+        "",
+        "## CONTENT ANALYSIS",
+        JSON.stringify(contentAnalysis, null, 2),
+        "",
+        "## PERSONA INSIGHTS",
+        JSON.stringify(personaInsights, null, 2),
+        "",
+        "## TASK",
+        "Identify opportunities for constructive disagreement and viral engagement:",
+        "1. Points where reasonable Christians might disagree",
+        "2. Controversial but defensible positions to take",
+        "3. Ways to provoke thought without being offensive",
+        "4. Viral-worthy angles or contradictions",
+        "5. Risk assessment for each approach",
+        "",
+        "## OUTPUT FORMAT",
+        "Return JSON with:",
+        "{",
+        "  'disagreement_points': ['point1', 'point2'],",
+        "  'controversial_positions': ['position1', 'position2'],",
+        "  'provocative_angles': ['angle1', 'angle2'],",
+        "  'viral_potential': 'low/medium/high',",
+        "  'risk_level': 'safe/moderate/risky',",
+        "  'optimal_approach': 'gentle/challenging/provocative'",
+        "  'shareable_insight': 'insight that could go viral'",
+        "}"
+    ].join("\n");
+
+    try {
+        const resp = await client.responses.create({
+            model: "gpt-4o-mini",
+            input: input,
+        });
+
+        const controversyText = resp.output_text?.trim() || "{}";
+        console.log(`🔥 Controversy analysis completed`);
+        return JSON.parse(controversyText);
+    } catch (error) {
+        console.warn(`Controversy analysis failed: ${error.message}`);
+        return {
+            disagreement_points: [],
+            controversial_positions: [],
+            provocative_angles: [],
+            viral_potential: 'medium',
+            risk_level: 'safe',
+            optimal_approach: 'gentle',
+            shareable_insight: ""
+        };
+    }
+}
+
+/**
  * Let AI intelligently decide conversation flow - no hardcoded logic needed
  */
 async function determineConversationStrategyWithAI({ 
@@ -594,7 +804,80 @@ async function selectBotToLoopInWithAI({
 }
 
 /**
- * Compose a reply using OpenAI's Responses API with AI-driven conversation flow.
+ * Layer 4: Generate viral-optimized response
+ */
+async function generateViralResponse(personaKey, contentAnalysis, personaInsights, controversy) {
+    const mod = await import("openai");
+    const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    const input = [
+        `You are an expert at crafting viral, engaging responses for ${personaKey} in Integral Christianity discussions.`,
+        "",
+        "## PERSONA CONTEXT",
+        `- Name: ${personaKey}`,
+        `- Stage: ${PERSONAS[personaKey].stage}`,
+        `- Voice: ${PERSONAS[personaKey].voice}`,
+        "",
+        "## CONTENT ANALYSIS",
+        JSON.stringify(contentAnalysis, null, 2),
+        "",
+        "## PERSONA INSIGHTS",
+        JSON.stringify(personaInsights, null, 2),
+        "",
+        "## CONTROVERSY ANALYSIS",
+        JSON.stringify(controversy, null, 2),
+        "",
+        "## TASK",
+        "Generate a response that maximizes engagement while staying authentic:",
+        "1. Incorporate the persona's unique insights",
+        "2. Use the optimal controversy approach",
+        "3. Include the shareable insight if appropriate",
+        "4. Challenge assumptions constructively",
+        "5. Create emotional resonance",
+        "6. Stay under 280 characters",
+        "",
+        "## VIRAL ELEMENTS TO INCLUDE",
+        "- Unexpected perspective shift",
+        "- Challenging common assumptions",
+        "- Emotional hook or connection",
+        "- Shareable insight or quote",
+        "- Call to reflection or action",
+        "",
+        "## OUTPUT FORMAT",
+        "Return JSON with:",
+        "{",
+        "  'response_text': 'the actual response',",
+        "  'viral_elements': ['element1', 'element2'],",
+        "  'engagement_prediction': 'low/medium/high',",
+        "  'controversy_level': 'safe/moderate/risky'",
+        "  'tagging_strategy': 'continue/loop-in/end'"
+        "}"
+    ].join("\n");
+
+    try {
+        const resp = await client.responses.create({
+            model: "gpt-4o-mini",
+            input: input,
+        });
+
+        const viralText = resp.output_text?.trim() || "{}";
+        console.log(`🚀 Viral response generated for ${personaKey}`);
+        return JSON.parse(viralText);
+    } catch (error) {
+        console.warn(`Viral response generation failed: ${error.message}`);
+        return {
+            response_text: "",
+            viral_elements: [],
+            engagement_prediction: 'medium',
+            controversy_level: 'safe',
+            tagging_strategy: 'continue'
+        };
+    }
+}
+
+/**
+ * Enhanced composeReply with multi-layer AI analysis
  */
 export async function composeReply({ personaKey, promptText, config, isFromBot, priority, originalPostAuthor, originalPostUri, replyCount = 0, conversationDepth = 1, allHandles = {} }) {
     if (!config.openaiApiKey) {
@@ -608,128 +891,59 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
     const personaPrompt = getPersonaPrompt(personaKey);
     const tone = pick(TONES);
 
-    // Enhanced context: try to get original post content
-    let enhancedContext = promptText ?? "(no context provided)";
-    
-    // If we have the original post URI, try to fetch its content for better context
-    if (originalPostUri && originalPostUri.includes('app.bsky.feed.post')) {
-        try {
-            // Extract DID and post ID from URI
-            const match = originalPostUri.match(/at:\/\/did:([^\/]+)\/app\.bsky\.feed\.post\/([^]+)/);
-            if (match) {
-                const [, did, postId] = match;
-                
-                // Try to get the original post content
-                const postResponse = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.feed.getPost?uri=${encodeURIComponent(originalPostUri)}`);
-                if (postResponse.ok) {
-                    const postData = await postResponse.json();
-                    if (postData.thread?.post?.record?.text) {
-                        enhancedContext = postData.thread.post.record.text;
-                        console.log(`📖 Fetched original post content: "${enhancedContext.substring(0, 100)}..."`);
-                    }
-                }
-            }
-        } catch (fetchError) {
-            console.warn(`⚠️ Could not fetch original post: ${fetchError.message}`);
-        }
-    }
+    console.log(`🧠 Starting multi-layer AI analysis for ${personaKey}`);
 
-    // Let AI decide conversation strategy
-    const strategy = await determineConversationStrategyWithAI({
-        personaKey,
-        isFromBot,
-        priority,
-        replyCount,
-        conversationDepth,
-        hasOpenQuestions: enhancedContext.includes('?'),
-        topicComplexity: 'medium', // AI will figure this out from content
-        originalPostContent: enhancedContext,
-        allHandles
-    });
+    // Layer 1: Deep content analysis
+    const contentAnalysis = await deepContentAnalysis(originalPostUri);
 
-    // Let AI select bot to loop in if needed
+    // Layer 2: Persona-specific insights
+    const personaInsights = await generatePersonaInsights(personaKey, contentAnalysis);
+
+    // Layer 3: Controversy and viral opportunities
+    const controversy = await identifyControversyOpportunities(contentAnalysis, personaInsights);
+
+    // Layer 4: Generate viral-optimized response
+    const viralResponse = await generateViralResponse(personaKey, contentAnalysis, personaInsights, controversy);
+
+    // Layer 5: Determine conversation strategy
+    const strategy = viralResponse.tagging_strategy || 'continue';
+
+    // Layer 6: Select bot to loop in if needed
     let botToLoopIn = null;
     if (strategy === 'loop-in') {
         botToLoopIn = await selectBotToLoopInWithAI({
             personaKey,
-            originalPostContent: enhancedContext,
+            originalPostContent: contentAnalysis.theological_claims.join(' '),
             allHandles
         });
     }
 
-    // Build tagging instructions based on AI decision
-    let taggingInstructions = '';
-    if (strategy === 'continue') {
-        taggingInstructions = `TAG @${originalPostAuthor || 'original_poster'} to continue the conversation.`;
-    } else if (strategy === 'loop-in' && botToLoopIn) {
-        taggingInstructions = `TAG both @${originalPostAuthor || 'original_poster'} and @${botToLoopIn} to bring in fresh perspective.`;
-    } else {
-        taggingInstructions = `DO NOT TAG anyone - let this be a natural conversation end point.`;
+    // Build final response with proper tagging
+    let finalResponse = viralResponse.response_text;
+    
+    if (strategy === 'continue' && originalPostAuthor) {
+        finalResponse = `@${originalPostAuthor} ${finalResponse}`;
+    } else if (strategy === 'loop-in' && originalPostAuthor && botToLoopIn) {
+        finalResponse = `@${originalPostAuthor} @${botToLoopIn} ${finalResponse}`;
     }
 
-    const input = [
-        personaPrompt,
-        "",
-        "## YOUR TASK",
-        `Write a SHORT, COMPLETE reply (under 280 characters) to someone who tagged you.`,
-        "CRITICAL REQUIREMENTS:",
-        "1. READ AND UNDERSTAND the original post content - don't just respond generically",
-        "2. Add YOUR UNIQUE PERSPECTIVE as this persona - what insights can only you offer?",
-        "3. ADVANCE THE CONVERSATION - ask questions, offer insights, or connect to bigger ideas",
-        "4. FOLLOW TAGGING INSTRUCTIONS EXACTLY as specified below",
-        "5. Every sentence MUST be complete. NO trailing off with '...' or incomplete thoughts",
-        "6. DO NOT end with conjunctions like 'and', 'but', 'because' without finishing thought",
-        "",
-        `## CONTEXT FROM THE USER'S POST`,
-        enhancedContext,
-        "",
-        `## CONVERSATION CONTEXT`,
-        `- This is a ${isFromBot ? 'bot-to-bot' : 'human-to-bot'} interaction`,
-        `- Priority level: ${priority}`,
-        `- Original poster: @${originalPostAuthor || 'unknown'}`,
-        `- Reply count in thread: ${replyCount}`,
-        `- Conversation depth: ${conversationDepth}`,
-        `- Topic complexity: ${topicComplexity}`,
-        `- Has open questions: ${hasOpenQuestions}`,
-        "",
-        `## TONE FOR THIS REPLY`,
-        `Approach: ${tone}`,
-        "",
-        "## CONVERSATION STRATEGY",
-        `Strategy: ${strategy}`,
-        taggingInstructions,
-        "",
-        "## REPLY REQUIREMENTS",
-        "- Add unique insights from your persona's perspective",
-        "- Ask thoughtful questions or make connections",
-        "- Keep it conversational and engaging",
-        "- ENSURE EVERY SENTENCE IS COMPLETE AND PROPERLY ENDED",
-        "",
-        "Just output the reply text, nothing else.",
-    ].join("\n");
-
-    console.log(`[${personaKey}] Calling OpenAI for reply with tone: ${tone}`);
-
-    const resp = await client.responses.create({
-        model: config.openaiModel,
-        input: input,
-    });
-
-    const text = resp.output_text?.trim() ?? "";
-    if (!text) {
-        throw new Error(`OpenAI returned empty reply for ${personaKey}.`);
+    // Ensure character limit
+    if (finalResponse.length > 280) {
+        // Trim while preserving tags
+        const tags = finalResponse.match(/@\w+/g) || [];
+        const tagText = tags.join(' ');
+        const contentWithoutTags = finalResponse.replace(/@\w+/g, '').trim();
+        const maxContentLength = 280 - tagText.length - 1;
+        
+        if (contentWithoutTags.length > maxContentLength) {
+            finalResponse = `${tagText} ${contentWithoutTags.substring(0, maxContentLength - 3)}...`;
+        } else {
+            finalResponse = `${tagText} ${contentWithoutTags}`;
+        }
     }
 
-    // Validate completeness for replies too
-    if (!validateCompleteSentences(text)) {
-        console.warn(`[${personaKey}] Reply has incomplete sentences, fixing...`);
-        text = ensureCompleteness(text, personaKey);
-    }
+    console.log(`🚀 Multi-layer AI response generated for ${personaKey}: "${finalResponse}"`);
+    console.log(`📊 Engagement prediction: ${viralResponse.engagement_prediction}, Controversy: ${viralResponse.controversy_level}`);
 
-    if (text.length > 300) {
-        throw new Error(`Reply too long (${text.length} chars) for ${personaKey}.`);
-    }
-
-    console.log(`[${personaKey}] Generated complete reply (${text.length} chars): ${text.slice(0, 60)}...`);
-    return text;
+    return finalResponse;
 }
