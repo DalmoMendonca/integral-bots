@@ -182,19 +182,12 @@ export function pickTopicForPersona({ personaKey, items, trending, state }) {
   const seen = new Set(state?.bots?.[personaKey]?.seen ?? []);
   const candidates = [];
 
-  // prefer fresh diverse news first
+  // ONLY use RSS items for regular posts (trending are for replies only)
   for (const it of items) {
     if (it.link && seen.has(it.link)) continue;
     // ignore suspiciously short titles
     if (it.title.length < 20) continue;
     candidates.push(it);
-  }
-  
-  // fallback: trending topics (no link)
-  for (const t of trending) {
-    const key = `trend:${t.title.toLowerCase()}`;
-    if (seen.has(key)) continue;
-    candidates.push({ ...t, link: key });
   }
 
   // Enhanced topic selection based on persona preferences
