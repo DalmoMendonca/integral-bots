@@ -22,7 +22,7 @@ export function loadState() {
     if (!state.seenNotifications) state.seenNotifications = {};
     if (!state.performance) state.performance = {};
     
-    console.log(`📋 Loaded state: ${JSON.stringify(state, null, 2)}`);
+    console.log(`📋 State loaded successfully`);
     return state;
   } catch {
     // Return default state structure
