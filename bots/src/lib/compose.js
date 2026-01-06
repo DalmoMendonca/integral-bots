@@ -893,7 +893,7 @@ async function generateViralResponse(personaKey, contentAnalysis, personaInsight
 /**
  * Enhanced composeReply with multi-layer AI analysis
  */
-export async function composeReply({ personaKey, promptText, config, isFromBot, priority, originalPostAuthor, originalPostUri, replyCount = 0, conversationDepth = 1, allHandles = {} }) {
+export async function composeReply({ personaKey, promptText, config, allHandles, replyCount = 0, conversationDepth = 1 }) {
     if (!config.openaiApiKey) {
         throw new Error(`OPENAI_API_KEY is not set. Cannot generate reply for ${personaKey}.`);
     }
@@ -908,7 +908,7 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
     console.log(`🧠 Starting multi-layer AI analysis for ${personaKey}`);
 
     // Layer 1: Deep content analysis
-    const contentAnalysis = await deepContentAnalysis(originalPostUri);
+    const contentAnalysis = await deepContentAnalysis(promptText);
 
     // Layer 2: Persona-specific insights
     const personaInsights = await generatePersonaInsights(personaKey, contentAnalysis);
@@ -932,21 +932,25 @@ export async function composeReply({ personaKey, promptText, config, isFromBot, 
         });
     }
 
-    // Build final response with proper tagging
+    // Build final response with proper tagging and character limits
     let finalResponse = viralResponse.response_text;
     
+    // Add original author tag if available
+    const originalPostAuthor = promptText.match(/@(\w+)\.?/)?.[1]; // Extract author from mention
     if (strategy === 'continue' && originalPostAuthor) {
         finalResponse = `@${originalPostAuthor} ${finalResponse}`;
     } else if (strategy === 'loop-in' && originalPostAuthor && botToLoopIn) {
         finalResponse = `@${originalPostAuthor} @${botToLoopIn} ${finalResponse}`;
     }
 
-    // Ensure character limit
+    // Ensure character limit (280 chars max for replies)
     if (finalResponse.length > 280) {
-        // Trim while preserving tags
+        // Extract tags and preserve them
         const tags = finalResponse.match(/@\w+/g) || [];
         const tagText = tags.join(' ');
         const contentWithoutTags = finalResponse.replace(/@\w+/g, '').trim();
+        
+        // Calculate available characters (280 - tag length - 1 for space)
         const maxContentLength = 280 - tagText.length - 1;
         
         if (contentWithoutTags.length > maxContentLength) {
