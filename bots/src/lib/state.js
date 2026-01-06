@@ -3,18 +3,48 @@ import path from "node:path";
 
 const STATE_PATH = path.resolve(process.cwd(), "data", "state.json");
 
+// Ensure data directory exists
+function ensureDataDir() {
+  const dataDir = path.dirname(STATE_PATH);
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+}
+
 export function loadState() {
   try {
+    ensureDataDir();
     const raw = fs.readFileSync(STATE_PATH, "utf8");
     return JSON.parse(raw);
   } catch {
-    return { version: 1, lastRunUtc: null, bots: {}, seenNotifications: {} };
+    // Return default state structure
+    const defaultState = { 
+      version: 1, 
+      lastRunUtc: null, 
+      bots: {}, 
+      seenNotifications: {},
+      performance: {}
+    };
+    // Save default state to create the file
+    ensureDataDir();
+    try {
+      fs.writeFileSync(STATE_PATH, JSON.stringify(defaultState, null, 2), "utf8");
+    } catch (e) {
+      // If we can't write, just return the default
+      console.warn("Could not create state file:", e?.message);
+    }
+    return defaultState;
   }
 }
 
 export function saveState(state) {
-  state.lastRunUtc = new Date().toISOString();
-  fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2), "utf8");
+  try {
+    ensureDataDir();
+    state.lastRunUtc = new Date().toISOString();
+    fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2), "utf8");
+  } catch (e) {
+    console.error("Failed to save state:", e?.message);
+  }
 }
 
 export function wasNotificationSeen(state, personaKey, notifUri) {

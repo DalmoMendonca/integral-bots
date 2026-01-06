@@ -3,7 +3,7 @@ import { BOT_ORDER } from "./lib/personas.js";
 import { fetchDiverseContent, fetchTrendingTopics, pickTopicForPersona, updateSeen } from "./lib/news.js";
 import { composePost, composeReply, getAdaptiveTone } from "./lib/compose.js";
 import { loginAgent, createPost, getUnansweredMentions, replyToUri, updatePostMetrics } from "./lib/bsky.js";
-import { loadState, saveState, markNotificationSeen } from "./state.js";
+import { loadState, saveState, markNotificationSeen } from "./lib/state.js";
 import { performanceTracker } from "./lib/learning.js";
 
 function normalizeHandle(h) {

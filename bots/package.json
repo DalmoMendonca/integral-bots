@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "scripts": {
     "run:hourly": "node src/run-hourly.js",
-    "lint": "node -c src/run-hourly.js && node -c src/lib/*.js"
+    "lint": "node -c src/run-hourly.js && node -c src/lib/config.js && node -c src/lib/state.js && node -c src/lib/personas.js && node -c src/lib/news.js && node -c src/lib/compose.js && node -c src/lib/bsky.js && node -c src/lib/learning.js"
   },
   "dependencies": {
     "@atproto/api": "^0.14.4",
