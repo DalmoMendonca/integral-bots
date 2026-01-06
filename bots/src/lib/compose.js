@@ -881,8 +881,17 @@ async function generateViralResponse(personaKey, contentAnalysis, personaInsight
         });
 
         const viralText = resp.output_text?.trim() || "{}";
+        
+        // More robust JSON parsing for viral responses
+        let cleanedViral = viralText
+            .replace(/```(?:json)?\s*[\r\n]*([\s\S]*?)```/g, '$1') // Remove code blocks
+            .replace(/```(?:g)?\s*([\s\S]*?)```/g, '$1') // Remove generic code blocks
+            .replace(/^[\s`'"]+|[\s`'"]+$/g, '') // Remove leading/trailing quotes
+            .replace(/[\r\n]+/g, ' ') // Clean up newlines
+            .trim();
+        
         console.log(`🚀 Viral response generated for ${personaKey}`);
-        return JSON.parse(viralText);
+        return JSON.parse(cleanedViral);
     } catch (error) {
         console.warn(`Viral response generation failed: ${error.message}`);
         return {
@@ -938,7 +947,14 @@ export async function composeReply({ personaKey, promptText, config, allHandles,
     }
 
     // Build final response with proper tagging and character limits
-    let finalResponse = viralResponse.response_text;
+    let finalResponse = viralResponse.response_text || "";
+    
+    // Add logging to debug empty responses
+    if (!finalResponse || finalResponse.trim().length === 0) {
+        console.error(`🚨 EMPTY RESPONSE DETECTED for ${personaKey}!`);
+        console.error(`🔍 Viral response object:`, viralResponse);
+        console.error(`🔍 Raw AI output:`, resp.output_text);
+    }
     
     // Add original author tag if available
     const originalPostAuthor = promptText.match(/@(\w+)\.?/)?.[1]; // Extract author from mention
