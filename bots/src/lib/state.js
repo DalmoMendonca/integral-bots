@@ -15,7 +15,15 @@ export function loadState() {
   try {
     ensureDataDir();
     const raw = fs.readFileSync(STATE_PATH, "utf8");
-    return JSON.parse(raw);
+    const state = JSON.parse(raw);
+    
+    // Ensure proper state structure
+    if (!state.bots) state.bots = {};
+    if (!state.seenNotifications) state.seenNotifications = {};
+    if (!state.performance) state.performance = {};
+    
+    console.log(`📋 Loaded state: ${JSON.stringify(state, null, 2)}`);
+    return state;
   } catch {
     // Return default state structure
     const defaultState = { 

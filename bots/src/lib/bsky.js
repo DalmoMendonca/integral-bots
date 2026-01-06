@@ -103,7 +103,9 @@ async function extractUrlMetadata(url) {
     try {
       // Clean URL for Jina AI - remove query params and ensure proper format
       const cleanUrl = url.split('?')[0];
-      const jinaUrl = `https://r.jina.ai/http://${cleanUrl}`;
+      // Remove http:// or https:// prefix for Jina AI
+      const urlWithoutProtocol = cleanUrl.replace(/^https?:\/\//, '');
+      const jinaUrl = `https://r.jina.ai/http://${urlWithoutProtocol}`;
       
       console.log(`🌐 Trying Jina AI with URL: ${jinaUrl}`);
       
