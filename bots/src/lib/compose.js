@@ -215,9 +215,9 @@ export function validateCompleteSentences(text) {
 }
 
 /**
- * Ensures text completeness by fixing incomplete sentences.
+ * Ensures text completeness using AI instead of hardcoded fallbacks
  */
-export function ensureCompleteness(text, personaKey) {
+export async function ensureCompleteness(text, personaKey, config) {
     const trimmed = text.trim();
     
     // If already complete, return as-is
@@ -225,59 +225,53 @@ export function ensureCompleteness(text, personaKey) {
         return trimmed;
     }
     
-    // Fix incomplete endings based on persona and context
-    let fixed = trimmed;
-    
-    // Fix trailing conjunctions or incomplete phrases first
-    const incompleteFixes = [
-        { 
-            pattern: /\b(and|but|or|nor|so|yet|for)\s*[.!?]*$/gi, 
-            replacement: (match) => `${match} this matters deeply.` 
-        },
-        { 
-            pattern: /\b(although|because|since|while|whereas|when|if|unless)\s*[.!?]*$/gi, 
-            replacement: (match) => `${match} we must consider the implications.` 
-        },
-        { 
-            pattern: /\b(the|a|an|this|that|these|those)\s*[.!?]*$/gi, 
-            replacement: (match) => `${match} demands our attention.` 
-        },
-        { 
-            pattern: /\b(like|such as|including|for example|for instance)\s*[.!?]*$/gi, 
-            replacement: (match) => `${match} among other critical concerns.` 
-        },
-    ];
-    
-    for (const fix of incompleteFixes) {
-        if (fix.pattern.test(fixed)) {
-            fixed = fixed.replace(fix.pattern, fix.replacement);
-            break;
-        }
-    }
-    
-    // Add proper ending if missing
-    if (!/[.!?]$/.test(fixed)) {
-        if (fixed.includes('?')) {
-            fixed += '?';
-        } else if (fixed.toLowerCase().includes('war') || fixed.toLowerCase().includes('fight')) {
-            fixed += ' and we must stand firm.';
-        } else if (fixed.toLowerCase().match(/^(as|being|like|such)/i)) {
-            fixed += ' and here\'s what this means for us.';
-        } else if (fixed.toLowerCase().match(/\b(how|why|what|where|when|who|which)\b/i)) {
-            fixed += '?';
-        } else if (fixed.toLowerCase().match(/\b(because|since|although|while|if|unless)\b/i)) {
-            fixed += ' we must act wisely.';
-        } else if (fixed.length < 20) {
-            fixed += ' this requires our attention.';
+    // Use AI to complete the thought authentically
+    try {
+        const mod = await import("openai");
+        const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
+        const client = new OpenAI({ apiKey: config.openaiApiKey });
+
+        const personaPrompt = getPersonaPrompt(personaKey);
+        
+        const input = [
+            personaPrompt,
+            "",
+            "## TASK",
+            "Complete this incomplete thought authentically in your persona's voice:",
+            "",
+            "INCOMPLETE TEXT:",
+            trimmed,
+            "",
+            "REQUIREMENTS:",
+            "- Complete the thought naturally in your persona's voice",
+            "- Keep it under 300 characters total",
+            "- End with proper punctuation (., ?, !)",
+            "- Avoid cliché phrases like 'address with courage', 'thoughts and prayers'",
+            "- Make it sound fresh and authentic, not like a template",
+            "- DO NOT add extra context, just complete what's already there",
+            "",
+            "Return only the completed text, nothing else."
+        ].join("\n");
+
+        const resp = await client.responses.create({
+            model: config.openaiModel,
+            input: input,
+        });
+
+        const completedText = resp.output_text?.trim() || trimmed;
+        
+        // Final validation
+        if (validateCompleteSentences(completedText) && completedText.length <= 300) {
+            console.log(`[${personaKey}] AI-completed incomplete sentence`);
+            return completedText;
         } else {
-            fixed += '.';
+            console.warn(`[${personaKey}] AI completion still invalid, using original`);
+            return trimmed;
         }
+    } catch (error) {
+        console.warn(`[${personaKey}] AI completion failed: ${error.message}, using original`);
+        return trimmed;
     }
-    
-    // Remove any ellipses and complete the thought
-    fixed = fixed.replace(/\.\.\./g, '.');
-    
-    return fixed.trim();
 }
 
 function safeUrl(u) {
@@ -397,8 +391,8 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
 
     // Validate completeness first, then length
     if (!validateCompleteSentences(text)) {
-        console.warn(`[${personaKey}] Post has incomplete sentences, fixing...`);
-        text = ensureCompleteness(text, personaKey);
+      console.warn(`[${personaKey}] Post has incomplete sentences, fixing...`);
+      text = await ensureCompleteness(text, personaKey, config);
     }
 
     // Validate length (no clamping - if too long, regenerate with better instructions)
@@ -427,7 +421,7 @@ REQUIREMENTS:
         
         // Final completeness check
         if (!validateCompleteSentences(text)) {
-            text = ensureCompleteness(text, personaKey);
+            text = await ensureCompleteness(text, personaKey, config);
         }
         
         if (!text || text.length > 300) {
