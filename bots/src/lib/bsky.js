@@ -6,6 +6,30 @@ async function asRichText(agent, text) {
   // detectFacets(...) resolves @handles to DIDs and annotates URLs.
   const rt = new RichText({ text });
   await rt.detectFacets(agent);
+  
+  // Enhanced link embedding for better previews
+  const facets = rt.facets || [];
+  
+  // Process each facet to ensure proper embedding
+  for (let i = 0; i < facets.length; i++) {
+    const facet = facets[i];
+    
+    // If this is a URL facet, ensure it's properly formatted for embedding
+    if (facet.features?.[0]?.['$type'] === 'app.bsky.richtext.facet#link') {
+      const uri = facet.features[0].uri;
+      
+      // Validate and clean the URI
+      try {
+        const url = new URL(uri);
+        // Ensure proper URL format for Bluesky embedding
+        facet.features[0].uri = url.toString();
+      } catch (e) {
+        console.warn(`Invalid URL in facet: ${uri}`, e);
+      }
+    }
+  }
+  
+  rt.facets = facets;
   return rt;
 }
 
@@ -17,11 +41,61 @@ export async function loginAgent({ handle, appPassword }) {
 
 export async function createPost(agent, text, personaKey, tone, topic) {
   const rt = await asRichText(agent, text);
-  const result = await agent.post({
+  
+  // Extract URLs from text for potential embedding
+  const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
+  const urls = text.match(urlRegex) || [];
+  
+  const postOptions = {
     text: rt.text,
     facets: rt.facets,
     createdAt: new Date().toISOString(),
-  });
+  };
+  
+  // Try to create embed for first URL if found
+  if (urls.length > 0) {
+    try {
+      const url = urls[0];
+      // For Bluesky, we need to resolve the external URL to create an embed
+      const response = await fetch(url, { method: 'HEAD' });
+      
+      if (response.ok) {
+        const contentType = response.headers.get('content-type') || '';
+        
+        // Create embed based on content type
+        if (contentType.includes('text/html')) {
+          // External link embed
+          postOptions.embed = {
+            $type: 'app.bsky.embed.external',
+            external: {
+              uri: url,
+              title: extractTitleFromUrl(url),
+              description: extractDescriptionFromUrl(url),
+            }
+          };
+        } else if (contentType.startsWith('image/')) {
+          // Image embed
+          postOptions.embed = {
+            $type: 'app.bsky.embed.images',
+            images: [{
+              alt: 'Embedded image',
+              image: {
+                $type: 'blob',
+                ref: {
+                  $link: url
+                }
+              }
+            }]
+          };
+        }
+      }
+    } catch (e) {
+      console.warn(`Could not create embed for URL ${urls[0]}:`, e.message);
+      // Continue without embed if it fails
+    }
+  }
+
+  const result = await agent.post(postOptions);
 
   // Track post creation for learning
   performanceTracker.trackPostPerformance(personaKey, result.uri, {
@@ -35,6 +109,18 @@ export async function createPost(agent, text, personaKey, tone, topic) {
   });
 
   return result;
+}
+
+// Helper functions for embed metadata
+function extractTitleFromUrl(url) {
+  // Simple fallback - in production, you might want to fetch and parse HTML
+  const domain = new URL(url).hostname;
+  return `Link from ${domain}`;
+}
+
+function extractDescriptionFromUrl(url) {
+  // Simple fallback
+  return `Check out this link: ${url}`;
 }
 
 export async function replyToUri(agent, parentUri, text, personaKey, tone) {
@@ -131,7 +217,7 @@ export function extractMentions(text) {
 }
 
 export async function getUnansweredMentions(agent, personaKey, state, hoursBack = 24) {
-  const notifs = await listMentions(agent, 50);
+  const notifs = await listMentions(agent, 100); // Get more notifications to catch all mentions
   const cutoffTime = Date.now() - (hoursBack * 60 * 60 * 1000);
   
   const unanswered = [];
@@ -142,8 +228,10 @@ export async function getUnansweredMentions(agent, personaKey, state, hoursBack 
       continue;
     }
     
-    // Skip if already seen/replied
-    if (state?.bots?.[personaKey]?.repliedTo?.includes(notif.uri)) {
+    // Skip if already replied to (more comprehensive check)
+    const wasReplied = state?.bots?.[personaKey]?.repliedTo?.includes(notif.uri) ||
+                       state?.seenNotifications?.[personaKey]?.includes(notif.uri);
+    if (wasReplied) {
       continue;
     }
     

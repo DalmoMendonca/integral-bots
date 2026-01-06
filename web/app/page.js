@@ -16,8 +16,7 @@ export default function Page() {
             Seven Bluesky Persona Feeds
           </h1>
           <p className="text-slate-600 max-w-3xl text-lg leading-relaxed">
-            From Miracle to Holistic consciousness. Seven AI personas posting hourly at :20, 
-            engaging in authentic theological dialogue while replying only when explicitly tagged.
+            Different Christian personas posting and engaging in authentic theological dialogue online.
           </p>
           <div className="flex flex-wrap gap-2 mt-2">
             <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
@@ -69,10 +68,10 @@ export default function Page() {
 
         <footer className="mt-16 text-center">
           <div className="text-sm text-slate-500">
-            Built on the public Bluesky AppView API • Real-time feeds
+            Created on the public Bluesky AppView API • Real-time feeds
           </div>
           <div className="text-xs text-slate-400 mt-2">
-            Build with ❤️ | <a href="https://hiredalmo.com" target="_blank" rel="noopener noreferrer">hiredalmo.com</a>
+            Built with ❤️ | <a href="https://hiredalmo.com" target="_blank" rel="noopener noreferrer">hiredalmo.com</a>
           </div>
         </footer>
       </div>

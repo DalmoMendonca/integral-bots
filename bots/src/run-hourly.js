@@ -23,6 +23,8 @@ async function run() {
   const config = loadConfig();
   const state = loadState();
 
+  console.log(`Starting bot run - posts can occur at any time`);
+
   const allHandles = buildAllHandles(config);
 
   const rssItems = await fetchDiverseContent(8);
