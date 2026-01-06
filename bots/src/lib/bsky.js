@@ -62,7 +62,7 @@ export async function createPost(agent, text, personaKey, tone, topic) {
       const metadata = await extractUrlMetadata(url);
       
       // Create rich external embed
-      postOptions.embed = {
+      const embedData = {
         $type: 'app.bsky.embed.external',
         external: {
           uri: url,
@@ -71,7 +71,21 @@ export async function createPost(agent, text, personaKey, tone, topic) {
         }
       };
       
-      console.log(`Created embed with title: "${metadata.title}"`);
+      // Add thumbnail if we found one
+      if (metadata.thumbnail) {
+        embedData.external.thumb = {
+          $type: 'blob',
+          ref: {
+            $link: metadata.thumbnail
+          },
+          mimeType: 'image/jpeg',
+          size: 0 // Bluesky will figure this out
+        };
+      }
+      
+      postOptions.embed = embedData;
+      
+      console.log(`Created embed with title: "${metadata.title}", thumbnail: ${metadata.thumbnail ? 'YES' : 'NO'}`);
     } catch (e) {
       console.warn(`Could not create embed for URL ${urls[0]}:`, e.message);
       // Continue without embed if it fails
@@ -135,9 +149,54 @@ async function extractUrlMetadata(url) {
         
         if (title) {
           console.log(`✅ Jina AI success - Title: "${title}"`);
+          
+          // Method 2: Try to fetch the actual HTML to get thumbnail image
+          let thumbnail = '';
+          try {
+            const htmlResponse = await fetch(cleanUrl, {
+              method: 'GET',
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; IntegralBots/1.0)'
+              },
+              timeout: 10000
+            });
+            
+            if (htmlResponse.ok) {
+              const html = await htmlResponse.text();
+              
+              // Extract Open Graph image
+              const ogImageMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+              if (ogImageMatch && ogImageMatch[1]) {
+                thumbnail = ogImageMatch[1];
+                console.log(`🖼️ Found OG image: ${thumbnail}`);
+              }
+              
+              // Extract Twitter image as fallback
+              if (!thumbnail) {
+                const twitterImageMatch = html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
+                if (twitterImageMatch && twitterImageMatch[1]) {
+                  thumbnail = twitterImageMatch[1];
+                  console.log(`🖼️ Found Twitter image: ${thumbnail}`);
+                }
+              }
+              
+              // Extract better description from meta tags if Jina AI didn't get one
+              if (!description) {
+                const ogDescMatch = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
+                if (ogDescMatch && ogDescMatch[1]) {
+                  description = ogDescMatch[1];
+                  console.log(`📝 Found OG description: ${description.substring(0, 50)}...`);
+                }
+              }
+            }
+          } catch (htmlError) {
+            console.warn(`⚠️ Could not fetch HTML for thumbnail: ${htmlError.message}`);
+          }
+          
           return {
             title: title,
-            description: description || `Content from ${new URL(url).hostname}`
+            description: description || `Content from ${new URL(url).hostname}`,
+            thumbnail: thumbnail
           };
         }
       } else {
@@ -154,22 +213,24 @@ async function extractUrlMetadata(url) {
     }
     
     // Clean up description - make it more natural
-    if (description.length > 200) {
+    if (description && description.length > 200) {
       description = description.substring(0, 197) + '...';
     }
     
-    console.log(`Extracted - Title: "${title}", Description: "${description.substring(0, 50)}..."`);
+    console.log(`Extracted - Title: "${title}", Description: "${description?.substring(0, 50) || 'none'}...", Thumbnail: "${thumbnail || 'none'}"`);
     
     return {
       title: title || `Link from ${new URL(url).hostname}`,
-      description: description || `Check out this content from ${new URL(url).hostname}`
+      description: description || `Check out this content from ${new URL(url).hostname}`,
+      thumbnail: thumbnail
     };
     
   } catch (error) {
     console.warn(`Metadata extraction failed for ${url}:`, error.message);
     return {
       title: `Link from ${new URL(url).hostname}`,
-      description: `Check out this link: ${url}`
+      description: `Check out this link: ${url}`,
+      thumbnail: ''
     };
   }
 }
