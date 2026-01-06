@@ -71,8 +71,8 @@ export async function createPost(agent, text, personaKey, tone, topic) {
         }
       };
       
-      // Add thumbnail if we found one
-      if (metadata.thumbnail) {
+      // Add thumbnail if we found one AND it's a valid URL
+      if (metadata.thumbnail && metadata.thumbnail.startsWith('http')) {
         embedData.external.thumb = {
           $type: 'blob',
           ref: {
