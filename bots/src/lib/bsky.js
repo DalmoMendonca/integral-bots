@@ -1,4 +1,12 @@
-import { BskyAgent } from "@atproto/api";
+import { BskyAgent, RichText } from "@atproto/api";
+
+async function asRichText(agent, text) {
+  // Bluesky needs facets for clickable links + real mentions.
+  // detectFacets(...) resolves @handles to DIDs and annotates URLs.
+  const rt = new RichText({ text });
+  await rt.detectFacets(agent);
+  return rt;
+}
 
 export async function loginAgent({ handle, appPassword }) {
   const agent = new BskyAgent({ service: "https://bsky.social" });
@@ -7,8 +15,10 @@ export async function loginAgent({ handle, appPassword }) {
 }
 
 export async function createPost(agent, text) {
+  const rt = await asRichText(agent, text);
   return agent.post({
-    text,
+    text: rt.text,
+    facets: rt.facets,
     createdAt: new Date().toISOString(),
   });
 }
@@ -19,8 +29,11 @@ export async function replyToUri(agent, parentUri, text) {
   if (!post?.uri || !post?.cid) throw new Error("Could not resolve parent post for reply");
   const root = thread?.data?.thread?.post?.reply?.root ?? { uri: post.uri, cid: post.cid };
 
+  const rt = await asRichText(agent, text);
+
   return agent.post({
-    text,
+    text: rt.text,
+    facets: rt.facets,
     createdAt: new Date().toISOString(),
     reply: {
       root: { uri: root.uri, cid: root.cid },

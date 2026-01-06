@@ -1,6 +1,8 @@
 import { PERSONAS, BOT_ORDER } from "./personas.js";
 
-const MAX_CHARS = 300;
+// Bluesky max is 300. Keeping a little headroom reduces ugly UI truncation
+// when we append mentions + a URL line.
+const MAX_CHARS = 280;
 
 function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -12,6 +14,24 @@ function clampText(text, max = MAX_CHARS) {
   const trimmed = text.slice(0, max - 1);
   const cut = trimmed.lastIndexOf(" ");
   return (cut > 60 ? trimmed.slice(0, cut) : trimmed).trimEnd() + "…";
+}
+
+function isLikelyUrl(s) {
+  return /^https?:\/\//i.test((s ?? "").trim());
+}
+
+function clampPreserveUrl(text, max = MAX_CHARS) {
+  // If the last line is a URL, preserve it and clamp the body instead.
+  const lines = String(text).split("\n");
+  const last = lines[lines.length - 1]?.trim();
+  if (!last || !isLikelyUrl(last)) return clampText(text, max);
+
+  const url = last;
+  const core = lines.slice(0, -1).join("\n").trimEnd();
+  const reserved = 1 + url.length; // newline + URL
+  const budget = Math.max(40, max - reserved);
+  const coreClamped = clampText(core, budget);
+  return `${coreClamped}\n${url}`;
 }
 
 function safeUrl(u) {
@@ -31,7 +51,7 @@ function buildTemplatePost({ personaKey, topic, allHandles }) {
 
   const core = `${open} ${topic.title}\n\n${take} ${mention ? mention + " " : ""}${close}`;
   const withUrl = url ? `${core}\n${url}` : core;
-  return clampText(withUrl);
+  return clampPreserveUrl(withUrl);
 }
 
 function maybeMentionOtherBot(personaKey, allHandles) {
@@ -51,7 +71,9 @@ function maybeMentionOtherBot(personaKey, allHandles) {
     ANDREA: ["What does love look like here,", "Can we respond from communion,"],
   };
   const prompt = pick(callouts[personaKey] ?? ["Thoughts,"]);
-  return `${prompt} @${allHandles[target]}?`;
+  // IMPORTANT: keep the @handle token clean (no trailing punctuation)
+  // so RichText.detectFacets can turn it into a real mention facet.
+  return `${prompt} @${allHandles[target]}`;
 }
 
 /** Optional OpenAI: if you set OPENAI_API_KEY, we’ll use it.
@@ -74,7 +96,7 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         `Constraints: respectful; no slurs; no harassment; no sexual content; no doxxing; no medical/legal instructions.`,
         `Write ONE Bluesky post max ${MAX_CHARS} characters.`,
         `If a URL is provided, include it on its own line at the end.`,
-        `If a mention is provided, include it naturally.`,
+        `If a mention is provided, include the @handle token exactly as-is (no trailing punctuation like '?' or ',').`,
       ].join("\n");
 
       const user = [
@@ -94,8 +116,12 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         temperature: 0.9,
       });
 
-      const text = resp.choices?.[0]?.message?.content?.trim() ?? "";
-      if (text) return clampText(text);
+      let text = resp.choices?.[0]?.message?.content?.trim() ?? "";
+      if (text) {
+        // Ensure the URL (if any) is present and on its own line at the end.
+        if (url && !text.includes(url)) text = `${text}\n${url}`;
+        return clampPreserveUrl(text);
+      }
     } catch {
       // fall through to template
     }
