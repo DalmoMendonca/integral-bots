@@ -2,13 +2,20 @@ import { BskyAgent, RichText } from "@atproto/api";
 import { performanceTracker } from "./learning.js";
 
 async function asRichText(agent, text) {
+  // CRITICAL DEBUG: Log input text before processing
+  console.log(`🔍 INPUT TEXT:`, text);
+  console.log(`🔍 EXTRACTED URLS:`, text.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g));
+
   // Bluesky needs facets for clickable links + real mentions.
   // detectFacets(...) resolves @handles to DIDs and annotates URLs.
   const rt = new RichText({ text });
   await rt.detectFacets(agent);
-  
+
   // Enhanced link embedding for better previews
   const facets = rt.facets || [];
+
+  // CRITICAL DEBUG: Log facets after processing
+  console.log(`🔍 PROCESSED FACETS:`, JSON.stringify(facets, null, 2));
   
   // Process each facet to ensure proper embedding
   for (let i = 0; i < facets.length; i++) {
@@ -18,7 +25,7 @@ async function asRichText(agent, text) {
     if (facet.features?.[0]?.['$type'] === 'app.bsky.richtext.facet#link') {
       const uri = facet.features[0].uri;
       
-      // Validate and clean the URI
+      // Validate and clean up URI
       try {
         const url = new URL(uri);
         // Ensure proper URL format for Bluesky embedding
@@ -93,6 +100,11 @@ export async function createPost(agent, text, personaKey, tone, topic) {
   }
 
   const result = await agent.post(postOptions);
+  
+  // CRITICAL DEBUGGING: Log exact post creation details
+  console.log(`🔍 POST OPTIONS:`, JSON.stringify(postOptions, null, 2));
+  console.log(`🔍 RESULT:`, JSON.stringify(result, null, 2));
+  console.log(`🔍 EMBED SUCCESS:`, !!postOptions.embed);
   
   // Track post creation for learning
   performanceTracker.trackPostPerformance(personaKey, result.uri, {
