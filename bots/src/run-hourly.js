@@ -1,9 +1,10 @@
 import { loadConfig } from "./lib/config.js";
 import { BOT_ORDER } from "./lib/personas.js";
-import { fetchRssItems, fetchTrendingTopics, pickTopicForPersona, updateSeen } from "./lib/news.js";
-import { composePost, composeReply } from "./lib/compose.js";
-import { loginAgent, createPost, listMentions, replyToUri } from "./lib/bsky.js";
-import { loadState, saveState, wasNotificationSeen, markNotificationSeen } from "./lib/state.js";
+import { fetchDiverseContent, fetchTrendingTopics, pickTopicForPersona, updateSeen } from "./lib/news.js";
+import { composePost, composeReply, getAdaptiveTone } from "./lib/compose.js";
+import { loginAgent, createPost, getUnansweredMentions, replyToUri, updatePostMetrics } from "./lib/bsky.js";
+import { loadState, saveState, markNotificationSeen } from "./state.js";
+import { performanceTracker } from "./lib/learning.js";
 
 function normalizeHandle(h) {
   if (!h) return h;
@@ -24,7 +25,7 @@ async function run() {
 
   const allHandles = buildAllHandles(config);
 
-  const rssItems = await fetchRssItems(config.feeds, 8);
+  const rssItems = await fetchDiverseContent(8);
   const trending = await fetchTrendingTopics(20);
 
   const enabledBots = BOT_ORDER.filter(k => config.bots[k]);
@@ -48,29 +49,41 @@ async function run() {
       continue;
     }
 
-    // 1) Reply only to opt-in interactions (mentions/replies)
+    // 1) Enhanced reply system with priority for bot-to-bot interactions
     try {
-      const notifs = await listMentions(agent, 30);
+      const unansweredMentions = await getUnansweredMentions(agent, personaKey, state, 24);
       let replied = 0;
 
-      for (const n of notifs) {
+      for (const mention of unansweredMentions) {
         if (replied >= perBotReplyBudget) break;
-        if (wasNotificationSeen(state, personaKey, n.uri)) continue;
+        
+        // Enhanced context with thread awareness
+        const prompt = mention?.record?.text ?? mention?.reason ?? "mention";
+        const replyText = await composeReply({ 
+          personaKey, 
+          promptText: prompt, 
+          config,
+          isFromBot: mention.isFromBot,
+          priority: mention.priority
+        });
 
-        // Minimal context. We keep this short to avoid needing heavy post-thread fetching.
-        const prompt = n?.record?.text ?? n?.reason ?? "mention";
-        const replyText = await composeReply({ personaKey, promptText: prompt, config });
-
-        await replyToUri(agent, n.uri, replyText);
-        markNotificationSeen(state, personaKey, n.uri);
+        await replyToUri(agent, mention.uri, replyText, personaKey, getAdaptiveTone(personaKey));
+        markNotificationSeen(state, personaKey, mention.uri);
         replied++;
-        console.log(`Replied to: ${n.uri}`);
+        console.log(`Replied to ${mention.isFromBot ? 'bot' : 'user'}: ${mention.uri}`);
       }
     } catch (e) {
       console.warn(`Reply pass failed for ${personaKey}:`, e?.message ?? e);
     }
 
-    // 2) Post at least once per run (this workflow is scheduled at :20)
+    // 2) Update performance metrics before posting
+    try {
+      await updatePostMetrics(agent, personaKey);
+    } catch (e) {
+      console.warn(`Metrics update failed for ${personaKey}:`, e?.message ?? e);
+    }
+
+    // 3) Post at least once per run with enhanced features
     for (let i = 0; i < perBotPostBudget; i++) {
       const topic = pickTopicForPersona({ personaKey, items: rssItems, trending, state });
       if (!topic) {
@@ -78,10 +91,11 @@ async function run() {
         break;
       }
 
+      const tone = getAdaptiveTone(personaKey);
       const text = await composePost({ personaKey, topic, config, allHandles });
 
       try {
-        const res = await createPost(agent, text);
+        const res = await createPost(agent, text, personaKey, tone, topic);
         console.log(`Posted: ${res?.uri ?? "(ok)"}`);
         updateSeen(state, personaKey, topic.link ?? `trend:${topic.title.toLowerCase()}`);
         break; // ensure at least one post; don’t spam multiple in a row unless you raise budgets

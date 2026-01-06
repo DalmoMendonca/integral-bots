@@ -27,4 +27,15 @@ export function markNotificationSeen(state, personaKey, notifUri, maxSeen = 250)
   const arr = state.seenNotifications[personaKey] ?? [];
   arr.unshift(notifUri);
   state.seenNotifications[personaKey] = Array.from(new Set(arr)).slice(0, maxSeen);
+  
+  // Also track as replied for the new system
+  if (!state.bots) state.bots = {};
+  if (!state.bots[personaKey]) state.bots[personaKey] = {};
+  if (!state.bots[personaKey].repliedTo) state.bots[personaKey].repliedTo = [];
+  
+  const repliedArr = state.bots[personaKey].repliedTo;
+  if (!repliedArr.includes(notifUri)) {
+    repliedArr.unshift(notifUri);
+    state.bots[personaKey].repliedTo = repliedArr.slice(0, maxSeen);
+  }
 }

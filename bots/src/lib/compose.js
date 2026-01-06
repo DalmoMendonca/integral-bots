@@ -2,6 +2,7 @@ import { PERSONAS, BOT_ORDER } from "./personas.js";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { performanceTracker } from "./learning.js";
 
 // Load the full persona prompts from the text file
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -54,6 +55,126 @@ const TONES = [
 
 function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/**
+ * Get adaptive tone selection based on learning data
+ */
+export function getAdaptiveTone(personaKey) {
+    const recommendations = performanceTracker.getAdaptiveRecommendations(personaKey);
+    
+    // If we have learning data, use it
+    if (recommendations.preferredTones.length > 0) {
+        // Weight selection toward preferred tones
+        const preferredWeights = recommendations.preferredTones.map(t => ({
+            tone: t.tone,
+            weight: Math.min(t.effectiveness, 2.0) // Cap weight at 2.0
+        }));
+        
+        // Avoid least effective tones
+        const avoidedTones = new Set(
+            recommendations.avoidedTones.map(t => t.tone)
+        );
+        
+        const availableTones = TONES.filter(tone => {
+            const toneName = tone.split(' - ')[0];
+            return !avoidedTones.has(toneName);
+        });
+        
+        if (availableTones.length > 0) {
+            return pick(availableTones);
+        }
+    }
+    
+    // Fallback to random selection
+    return pick(TONES);
+}
+
+/**
+ * Enhanced bot-to-bot conversation starter
+ */
+function maybeStartConversation(personaKey, allHandles, topic) {
+    if (!allHandles) return "";
+    if (Math.random() > 0.25) return ""; // 25% chance to start conversation
+    
+    const others = BOT_ORDER.filter(k => k !== personaKey).filter(k => allHandles[k]);
+    if (others.length === 0) return "";
+    
+    // Select a target based on persona dynamics
+    const target = selectConversationTarget(personaKey, others, topic);
+    const callouts = getConversationCallouts(personaKey, target);
+    
+    if (callouts.length === 0) return "";
+    
+    const prompt = pick(callouts);
+    return `${prompt} @${allHandles[target]}`;
+}
+
+function selectConversationTarget(personaKey, others, topic) {
+    // Strategic targeting based on persona dynamics and topic
+    const dynamics = {
+        RUTH: { prefers: ['ANDREA', 'JERRY'], avoids: ['BRYCE'] },
+        BRYCE: { prefers: ['RAYMOND', 'JERRY'], avoids: ['PARKER'] },
+        JERRY: { prefers: ['RAYMOND', 'RUTH'], avoids: ['PARKER'] },
+        RAYMOND: { prefers: ['KENNY', 'BRYCE'], avoids: ['RUTH'] },
+        PARKER: { prefers: ['ANDREA', 'KENNY'], avoids: ['BRYCE'] },
+        KENNY: { prefers: ['RAYMOND', 'ANDREA'], avoids: ['JERRY'] },
+        ANDREA: { prefers: ['RUTH', 'PARKER'], avoids: ['BRYCE'] }
+    };
+    
+    const personaDynamics = dynamics[personaKey] || {};
+    
+    // Filter by preferences
+    let candidates = others;
+    if (personaDynamics.prefers) {
+        candidates = others.filter(k => personaDynamics.prefers.includes(k));
+    }
+    if (candidates.length === 0) {
+        candidates = others.filter(k => !personaDynamics.avoids?.includes(k));
+    }
+    if (candidates.length === 0) {
+        candidates = others;
+    }
+    
+    return pick(candidates);
+}
+
+function getConversationCallouts(personaKey, targetPersona) {
+    const persona = PERSONAS[personaKey];
+    const target = PERSONAS[targetPersona];
+    
+    const callouts = {
+        RUTH: {
+            ANDREA: ["Sister, can you feel the Spirit in this?", "What's your prayer on this?"],
+            JERRY: ["Brother, how should the Church respond?", "Your wisdom on this?"]
+        },
+        BRYCE: {
+            RAYMOND: ["What's your analysis of this?", "Where's the evidence?"],
+            JERRY: ["No dodging this - where do you stand?", "This needs clarity"]
+        },
+        JERRY: {
+            RAYMOND: ["How should we think about this?", "What's the principle here?"],
+            RUTH: ["How does this call us to prayer?", "Your pastoral thoughts?"]
+        },
+        RAYMOND: {
+            KENNY: ["What's the developmental angle here?", "AQAL perspective?"],
+            BRYCE: ["What data would change your mind?", "Mechanism analysis?"]
+        },
+        PARKER: {
+            ANDREA: ["How do we protect the vulnerable here?", "Whose voices are missing?"],
+            KENNY: ["What about power dynamics?", "How does this affect the marginalized?"]
+        },
+        KENNY: {
+            RAYMOND: ["Altitude check on this?", "What's the integral view?"],
+            ANDREA: ["How does this serve evolution?", "Second-tier perspective?"]
+        },
+        ANDREA: {
+            RUTH: ["Can we pray this into being?", "What does love ask of us?"],
+            PARKER: ["How do we respond from communion?", "What does healing look like?"]
+        }
+    };
+    
+    return callouts[personaKey]?.[targetPersona] || [];
 }
 
 /**
@@ -185,7 +306,7 @@ function maybeMentionOtherBot(personaKey, allHandles) {
 }
 
 /**
- * Compose a post using OpenAI's Responses API with web search.
+ * Compose a post using OpenAI's Responses API with web search and adaptive learning.
  * NO CLAMPING - the AI must generate a complete, short post.
  */
 export async function composePost({ personaKey, topic, config, allHandles }) {
@@ -199,13 +320,21 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
 
     const personaPrompt = getPersonaPrompt(personaKey);
     const url = safeUrl(topic.link);
-    const mention = maybeMentionOtherBot(personaKey, allHandles);
-    const tone = pick(TONES);
+    
+    // Use adaptive tone selection
+    const tone = getAdaptiveTone(personaKey);
+    
+    // Enhanced conversation starter
+    const conversation = maybeStartConversation(personaKey, allHandles, topic);
 
     // Calculate exact budget: 300 max - URL length - newline - safety margin
     const urlLength = url ? url.length + 1 : 0; // +1 for newline
-    const mentionLength = mention ? mention.length + 1 : 0;
-    const textBudget = 300 - urlLength - mentionLength - 5; // 5 char safety margin
+    const conversationLength = conversation ? conversation.length + 1 : 0;
+    const textBudget = 300 - urlLength - conversationLength - 5; // 5 char safety margin
+
+    // Get learning recommendations
+    const recommendations = performanceTracker.getAdaptiveRecommendations(personaKey);
+    const learningContext = generateLearningContext(recommendations);
 
     const input = [
         personaPrompt,
@@ -219,6 +348,9 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         `## TONE FOR THIS POST`,
         `Approach: ${tone}`,
         "",
+        `## LEARNING GUIDANCE`,
+        learningContext,
+        "",
         `## IMPORTANT CONSTRAINTS`,
         `- You have a HARD LIMIT of ${textBudget} characters for your text (not counting URL).`,
         `- Be punchy, memorable, and authentic to your persona.`,
@@ -230,15 +362,15 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         `TITLE: ${topic.title}`,
         `SOURCE: ${topic.source}`,
         url ? `URL (include this on its own line at the end): ${url}` : `(no URL)`,
-        mention ? `OPTIONAL MENTION (include exactly as shown): ${mention}` : `(no mention)`,
+        conversation ? `CONVERSATION STARTER (include exactly as shown): ${conversation}` : `(no conversation)`,
         "",
         `## OUTPUT FORMAT`,
         `Just the post text. If there's a URL, put it on its own line at the end.`,
-        `If there's a mention, include it naturally in your text.`,
+        `If there's a conversation starter, include it naturally in your text.`,
         `ENSURE EVERY SENTENCE IS COMPLETE AND PROPERLY ENDED.`,
     ].join("\n");
 
-    console.log(`[${personaKey}] Calling OpenAI with tone: ${tone}`);
+    console.log(`[${personaKey}] Calling OpenAI with adaptive tone: ${tone}`);
 
     // Use web_search tool to read the actual article content
     const resp = await client.responses.create({
@@ -292,6 +424,32 @@ REQUIREMENTS:
 
     console.log(`[${personaKey}] Generated complete post (${text.length} chars): ${text.slice(0, 60)}...`);
     return text;
+}
+
+function generateLearningContext(recommendations) {
+    let context = "Based on your performance data:\n";
+    
+    if (recommendations.preferredTones.length > 0) {
+        context += `- Your most effective tones: ${recommendations.preferredTones.slice(0, 3).map(t => t.tone).join(', ')}\n`;
+    }
+    
+    if (recommendations.preferredContent.length > 0) {
+        context += `- Topics that resonate well: ${recommendations.preferredContent.slice(0, 3).map(c => c.keyword).join(', ')}\n`;
+    }
+    
+    if (recommendations.effectivePatterns.length > 0) {
+        context += `- Effective patterns: ${recommendations.effectivePatterns.slice(0, 3).join(', ')}\n`;
+    }
+    
+    if (recommendations.ineffectivePatterns.length > 0) {
+        context += `- Avoid these patterns: ${recommendations.ineffectivePatterns.slice(0, 2).join(', ')}\n`;
+    }
+    
+    if (context === "Based on your performance data:\n") {
+        context = "No performance data available yet - use your best judgment.";
+    }
+    
+    return context;
 }
 
 /**
