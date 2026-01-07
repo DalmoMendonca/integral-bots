@@ -49,11 +49,14 @@ export async function loginAgent({ handle, appPassword }) {
 export async function createPost(agent, text, personaKey, tone, topic) {
   const rt = await asRichText(agent, text);
   
-  // Extract URLs from text for potential embedding
+  // Extract URLs from text for potential embedding (cleaned regex)
   const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
   const urls = text.match(urlRegex) || [];
   
-  console.log(`🔗 URL EXTRACTION: Found ${urls.length} URLs in text:`, urls);
+  // Clean URLs by removing trailing punctuation
+  const cleanUrls = urls.map(url => url.replace(/[)\]?]+$/, ''));
+  
+  console.log(`🔗 URL EXTRACTION: Found ${cleanUrls.length} URLs in text:`, cleanUrls);
   
   const postOptions = {
     text: rt.text,
@@ -62,16 +65,16 @@ export async function createPost(agent, text, personaKey, tone, topic) {
   };
   
   // Try to create embed for first URL if found
-  if (urls.length > 0) {
-    console.log(`🔗 EMBED ATTEMPT: Creating embed for URL: ${urls[0]}`);
+  if (cleanUrls.length > 0) {
+    console.log(`🔗 EMBED ATTEMPT: Creating embed for URL: ${cleanUrls[0]}`);
     try {
-      const url = urls[0];
+      const url = cleanUrls[0];
       console.log(`Creating embed for URL: ${url}`);
       
       // Extract rich metadata using Jina AI
       const metadata = await extractUrlMetadata(url);
       
-      // Create rich external embed
+      // Create rich external embed (WITHOUT thumbnail to avoid CID issues)
       const embedData = {
         $type: 'app.bsky.embed.external',
         external: {
@@ -81,24 +84,15 @@ export async function createPost(agent, text, personaKey, tone, topic) {
         }
       };
       
-      // Add thumbnail if we found one AND it's a valid URL
-      if (metadata.thumbnail && metadata.thumbnail.startsWith('http')) {
-        embedData.external.thumb = {
-          $type: 'blob',
-          ref: {
-            $link: metadata.thumbnail
-          },
-          mimeType: 'image/jpeg',
-          size: 0 // Bluesky will figure this out
-        };
-      }
+      // NOTE: Skipping thumbnail for now - requires blob upload which adds complexity
+      // The embed will still show rich preview with title/description
       
       postOptions.embed = embedData;
       
       console.log(`✅ EMBED SUCCESS: Created embed with title: "${metadata.title}", thumbnail: ${metadata.thumbnail ? 'YES' : 'NO'}`);
       console.log(`🔗 EMBED DATA:`, JSON.stringify(embedData, null, 2));
     } catch (e) {
-      console.warn(`❌ EMBED FAILED: Could not create embed for URL ${urls[0]}:`, e.message);
+      console.warn(`❌ EMBED FAILED: Could not create embed for URL ${cleanUrls[0]}:`, e.message);
       console.warn(`🔗 ERROR STACK:`, e.stack);
       // Continue without embed if it fails
     }
