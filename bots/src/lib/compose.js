@@ -290,6 +290,12 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
     const personaPrompt = getPersonaPrompt(personaKey);
     const url = safeUrl(topic.link);
     
+    // Debug: Log topic details
+    console.log(`📰 TOPIC SELECTED: ${topic.title}`);
+    console.log(`📰 TOPIC SOURCE: ${topic.source}`);
+    console.log(`📰 TOPIC URL: ${url || 'NO URL'}`);
+    console.log(`📰 TOPIC DESCRIPTION: ${topic.description?.substring(0, 100) || 'NO DESCRIPTION'}...`);
+    
     // Use adaptive tone selection
     const tone = getAdaptiveTone(personaKey);
     
@@ -330,14 +336,18 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         `- You have a HARD LIMIT of ${textBudget} characters for your text (not counting URL).`,
         `- Be punchy, memorable, and authentic to your persona.`,
         `- ACTUALLY READ and engage with the substance of the article content, not just the headline.`,
-        `- Use the web_search tool to read the full article before responding.`,
         `- Make it viral-worthy: novel, intuitive, funny, theological, or delightfully controversial.`,
         "",
         `## NEWS TO REACT TO`,
         `TITLE: ${topic.title}`,
         `SOURCE: ${topic.source}`,
-        url ? `URL (include this on its own line at the end): ${url}` : `(no URL)`,
+        `DESCRIPTION: ${topic.description || topic.content || "No description available"}`,
+        url ? `URL (MUST include this on its own line at the end): ${url}` : `(no URL)`,
         conversation ? `CONVERSATION STARTER (include exactly as shown): ${conversation}` : `(no conversation)`,
+        "",
+        `## CRITICAL URL REQUIREMENT`,
+        url ? `- You MUST include the URL ${url} on its own line at the end of your post` : `- No URL to include for this topic`,
+        `- The URL should be separated from your text by at least one blank line`,
         "",
         `## REPLY REQUIREMENTS`,
         "- Add unique insights from your persona's perspective",
@@ -351,11 +361,10 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
 
     console.log(`[${personaKey}] Calling OpenAI with adaptive tone: ${tone}`);
 
-    // Use web_search tool to read the actual article content
+    // Generate post without web_search - we provide the content directly
     const resp = await client.responses.create({
         model: config.openaiModel,
         input: input,
-        tools: [{ type: "web_search" }],
     });
 
     let text = resp.output_text?.trim() ?? "";
@@ -367,6 +376,9 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
     if (url && !text.includes(url)) {
         console.warn(`⚠️ AI response missing URL! Forcing inclusion...`);
         text = `${text}\n\n${url}`;
+        console.log(`🔗 FORCED URL: Added ${url} to post`);
+    } else if (url && text.includes(url)) {
+        console.log(`✅ URL correctly included: ${url}`);
     }
 
     // Validate completeness first, then length
