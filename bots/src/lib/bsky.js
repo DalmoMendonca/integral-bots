@@ -179,7 +179,11 @@ async function extractUrlMetadata(url) {
   try {
     console.log(`Fetching metadata for: ${url}`);
     
-    // Method 1: Try Jina AI (most reliable)
+    let title = '';
+    let description = '';
+    let thumbnail = '';
+    
+    // Strategy 1: Try Jina AI (most reliable for content extraction)
     try {
       // Clean URL for Jina AI - remove query params and ensure proper format
       const cleanUrl = url.split('?')[0];
@@ -187,7 +191,7 @@ async function extractUrlMetadata(url) {
       const urlWithoutProtocol = cleanUrl.replace(/^https?:\/\//, '');
       const jinaUrl = `https://r.jina.ai/http://${urlWithoutProtocol}`;
       
-      console.log(`🌐 Trying Jina AI with URL: ${jinaUrl}`);
+      console.log(`🌐 Strategy 1: Trying Jina AI with URL: ${jinaUrl}`);
       
       const response = await fetch(jinaUrl, {
         method: 'GET',
@@ -202,9 +206,6 @@ async function extractUrlMetadata(url) {
         const lines = text.split('\n');
         
         // Extract title and description from Jina AI summary
-        let title = '';
-        let description = '';
-        
         for (const line of lines) {
           if (line.startsWith('Title:')) {
             title = line.replace('Title:', '').trim();
@@ -215,87 +216,171 @@ async function extractUrlMetadata(url) {
         
         if (title) {
           console.log(`✅ Jina AI success - Title: "${title}"`);
-          
-          // Method 2: Try to fetch the actual HTML to get thumbnail image
-          let thumbnail = '';
-          try {
-            const htmlResponse = await fetch(cleanUrl, {
-              method: 'GET',
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; IntegralBots/1.0)'
-              },
-              timeout: 10000
-            });
-            
-            if (htmlResponse.ok) {
-              const html = await htmlResponse.text();
-              
-              // Extract Open Graph image
-              const ogImageMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
-              if (ogImageMatch && ogImageMatch[1]) {
-                thumbnail = ogImageMatch[1];
-                console.log(`🖼️ Found OG image: ${thumbnail}`);
-              }
-              
-              // Extract Twitter image as fallback
-              if (!thumbnail) {
-                const twitterImageMatch = html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
-                if (twitterImageMatch && twitterImageMatch[1]) {
-                  thumbnail = twitterImageMatch[1];
-                  console.log(`🖼️ Found Twitter image: ${thumbnail}`);
-                }
-              }
-              
-              // Extract better description from meta tags if Jina AI didn't get one
-              if (!description) {
-                const ogDescMatch = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
-                if (ogDescMatch && ogDescMatch[1]) {
-                  description = ogDescMatch[1];
-                  console.log(`📝 Found OG description: ${description.substring(0, 50)}...`);
-                }
-              }
-            }
-          } catch (htmlError) {
-            console.warn(`⚠️ Could not fetch HTML for thumbnail: ${htmlError.message}`);
-          }
-          
-          return {
-            title: title,
-            description: description || `Content from ${new URL(url).hostname}`,
-            thumbnail: thumbnail
-          };
         }
       } else {
-        throw new Error(`Jina AI returned ${response.status}`);
+        console.warn(`⚠️ Jina AI returned ${response.status}`);
       }
     } catch (jinaError) {
-      console.warn(`❌ Jina AI failed: ${jinaError.message}`);
+      console.warn(`⚠️ Jina AI failed: ${jinaError.message}`);
     }
     
-    // Fallback if no title found
-    if (!title) {
+    // Strategy 2: Direct HTML parsing with multiple fallbacks
+    if (!title || title.length < 3) {
+      try {
+        console.log(`🌐 Strategy 2: Trying direct HTML parsing`);
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+          },
+          timeout: 10000
+        });
+        
+        if (response.ok) {
+          const html = await response.text();
+          
+          // Extract title with multiple methods
+          if (!title) {
+            // Method 2a: Open Graph title
+            const ogTitleMatch = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
+            if (ogTitleMatch && ogTitleMatch[1]) {
+              title = ogTitleMatch[1];
+              console.log(`📝 Found OG title: ${title}`);
+            }
+          }
+          
+          if (!title) {
+            // Method 2b: Twitter title
+            const twitterTitleMatch = html.match(/<meta[^>]+name=["']twitter:title["'][^>]+content=["']([^"']+)["']/i);
+            if (twitterTitleMatch && twitterTitleMatch[1]) {
+              title = twitterTitleMatch[1];
+              console.log(`📝 Found Twitter title: ${title}`);
+            }
+          }
+          
+          if (!title) {
+            // Method 2c: HTML title tag
+            const htmlTitleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+            if (htmlTitleMatch && htmlTitleMatch[1]) {
+              title = htmlTitleMatch[1].trim();
+              console.log(`📝 Found HTML title: ${title}`);
+            }
+          }
+          
+          // Extract description with multiple methods
+          if (!description) {
+            // Method 2a: Open Graph description
+            const ogDescMatch = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
+            if (ogDescMatch && ogDescMatch[1]) {
+              description = ogDescMatch[1];
+              console.log(`📝 Found OG description: ${description.substring(0, 50)}...`);
+            }
+          }
+          
+          if (!description) {
+            // Method 2b: Twitter description
+            const twitterDescMatch = html.match(/<meta[^>]+name=["']twitter:description["'][^>]+content=["']([^"']+)["']/i);
+            if (twitterDescMatch && twitterDescMatch[1]) {
+              description = twitterDescMatch[1];
+              console.log(`📝 Found Twitter description: ${description.substring(0, 50)}...`);
+            }
+          }
+          
+          if (!description) {
+            // Method 2c: Meta description
+            const metaDescMatch = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
+            if (metaDescMatch && metaDescMatch[1]) {
+              description = metaDescMatch[1];
+              console.log(`📝 Found meta description: ${description.substring(0, 50)}...`);
+            }
+          }
+          
+          // Extract thumbnail with multiple methods
+          if (!thumbnail) {
+            // Method 2a: Open Graph image
+            const ogImageMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+            if (ogImageMatch && ogImageMatch[1]) {
+              thumbnail = ogImageMatch[1];
+              console.log(`🖼️ Found OG image: ${thumbnail}`);
+            }
+          }
+          
+          if (!thumbnail) {
+            // Method 2b: Twitter image
+            const twitterImageMatch = html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
+            if (twitterImageMatch && twitterImageMatch[1]) {
+              thumbnail = twitterImageMatch[1];
+              console.log(`🖼️ Found Twitter image: ${thumbnail}`);
+            }
+          }
+          
+          // Method 2c: Try to find first image in content as last resort
+          if (!thumbnail) {
+            const imgMatch = html.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
+            if (imgMatch && imgMatch[1] && !imgMatch[1].includes('data:image')) {
+              thumbnail = imgMatch[1];
+              console.log(`🖼️ Found first content image: ${thumbnail}`);
+            }
+          }
+        }
+      } catch (htmlError) {
+        console.warn(`⚠️ HTML parsing failed: ${htmlError.message}`);
+      }
+    }
+    
+    // Clean up and validate results
+    if (!title || title.length < 3) {
       const urlObj = new URL(url);
       title = urlObj.hostname.replace('www.', '');
+      console.log(`📝 Using hostname fallback: ${title}`);
     }
     
-    // Clean up description - make it more natural
-    if (description && description.length > 200) {
-      description = description.substring(0, 197) + '...';
+    // Clean up description
+    if (description) {
+      // Remove extra whitespace and newlines
+      description = description.replace(/\s+/g, ' ').trim();
+      
+      // Truncate if too long
+      if (description.length > 200) {
+        description = description.substring(0, 197) + '...';
+      }
     }
     
-    console.log(`Extracted - Title: "${title}", Description: "${description?.substring(0, 50) || 'none'}...", Thumbnail: "${thumbnail || 'none'}"`);
+    // Ensure we have some description
+    if (!description) {
+      description = `Content from ${new URL(url).hostname}`;
+    }
+    
+    // Clean up thumbnail URL
+    if (thumbnail) {
+      // Convert relative URLs to absolute
+      if (thumbnail.startsWith('//')) {
+        thumbnail = `https:${thumbnail}`;
+      } else if (thumbnail.startsWith('/')) {
+        const urlObj = new URL(url);
+        thumbnail = `${urlObj.protocol}//${urlObj.host}${thumbnail}`;
+      }
+    }
+    
+    console.log(`✅ Final metadata - Title: "${title}", Description: "${description.substring(0, 50)}...", Thumbnail: ${thumbnail ? 'YES' : 'NO'}`);
     
     return {
-      title: title || `Link from ${new URL(url).hostname}`,
-      description: description || `Check out this content from ${new URL(url).hostname}`,
+      title: title,
+      description: description,
       thumbnail: thumbnail
     };
     
   } catch (error) {
-    console.warn(`Metadata extraction failed for ${url}:`, error.message);
+    console.warn(`❌ All metadata extraction failed for ${url}:`, error.message);
     return {
       title: `Link from ${new URL(url).hostname}`,
-      description: `Check out this link: ${url}`,
+      description: `Check out this content from ${new URL(url).hostname}`,
       thumbnail: ''
     };
   }
