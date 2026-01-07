@@ -92,11 +92,37 @@ export async function createPost(agent, text, personaKey, tone, topic) {
             encoding: 'image/jpeg'
           });
           
+          // Debug the actual structure
+          console.log(`🔍 THUMBNAIL BLOB STRUCTURE:`, JSON.stringify(thumbnailBlob, null, 2));
+          
+          // Handle different possible response structures
+          let blobRef, mimeType, size;
+          
+          if (thumbnailBlob.blob) {
+            blobRef = thumbnailBlob.blob.ref;
+            mimeType = thumbnailBlob.blob.mimeType;
+            size = thumbnailBlob.blob.size;
+          } else if (thumbnailBlob.data && thumbnailBlob.data.blob) {
+            blobRef = thumbnailBlob.data.blob.ref;
+            mimeType = thumbnailBlob.data.blob.mimeType;
+            size = thumbnailBlob.data.blob.size;
+          } else if (thumbnailBlob.ref) {
+            blobRef = thumbnailBlob.ref;
+            mimeType = thumbnailBlob.mimeType;
+            size = thumbnailBlob.size;
+          } else {
+            throw new Error('Could not find blob reference in upload response');
+          }
+          
+          if (!blobRef || !blobRef.$link) {
+            throw new Error('Invalid blob reference structure');
+          }
+          
           embedData.external.thumb = {
             $type: 'blob',
-            ref: thumbnailBlob.blob.ref,
-            mimeType: thumbnailBlob.blob.mimeType,
-            size: thumbnailBlob.blob.size
+            ref: blobRef,
+            mimeType: mimeType,
+            size: size
           };
           
           console.log(`✅ Thumbnail uploaded successfully`);
