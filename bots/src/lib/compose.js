@@ -284,7 +284,8 @@ function maybeMentionOtherBot(personaKey, allHandles) {
         ANDREA: ["What does love look like here,", "Can we respond from communion,"],
     };
     const prompt = pick(callouts[personaKey] ?? ["Thoughts,"]);
-    return `${prompt} @${allHandles[target]}`;
+    const targetHandle = allHandles[target];
+    return targetHandle ? `${prompt} ${targetHandle}` : "";
 }
 
 /**
@@ -979,9 +980,12 @@ export async function composeReply({ personaKey, promptText, config, allHandles,
     // Add original author tag if available
     const originalPostAuthor = promptText.match(/@(\w+)\.?/)?.[1]; // Extract author from mention
     if (strategy === 'continue' && originalPostAuthor) {
-        finalResponse = `@${originalPostAuthor} ${finalResponse}`;
+        const authorHandle = allHandles[originalPostAuthor] || `@${originalPostAuthor}`;
+        finalResponse = `${authorHandle} ${finalResponse}`;
     } else if (strategy === 'loop-in' && originalPostAuthor && botToLoopIn) {
-        finalResponse = `@${originalPostAuthor} @${botToLoopIn} ${finalResponse}`;
+        const authorHandle = allHandles[originalPostAuthor] || `@${originalPostAuthor}`;
+        const botHandle = allHandles[botToLoopIn] || `@${botToLoopIn}`;
+        finalResponse = `${authorHandle} ${botHandle} ${finalResponse}`;
     }
 
     // Ensure character limit (280 chars max for replies)
