@@ -293,6 +293,17 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
     const personaPrompt = getPersonaPrompt(personaKey);
     const url = safeUrl(topic.link);
     
+    // Extract metadata for AI context
+    let metadata = {};
+    if (url) {
+        try {
+            metadata = await extractUrlMetadata(url);
+            console.log(`🎯 EMBED METADATA: Title="${metadata.title}", Description="${metadata.description?.substring(0, 100) || 'none'}", Thumbnail=${metadata.thumbnail ? 'YES' : 'NO'}`);
+        } catch (error) {
+            console.warn(`⚠️ Failed to extract metadata: ${error.message}`);
+        }
+    }
+    
     // Debug: Log topic details
     console.log(`📰 TOPIC SELECTED: ${topic.title}`);
     console.log(`📰 TOPIC SOURCE: ${topic.source}`);
@@ -328,7 +339,7 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         "- Each post should feel fresh and unique, not like a template",
         "## VOICE FOR THIS POST",
         "- Always approach the topic from YOUR persona's unique perspective",
-        "- Speak AS someone at your stage of faith development, without breaking the fourth wall and talking ABOUT your stage of faith development",
+        "- Speak AS someone at your stage of faith development, without breaking the fourth wall and talking ABOUT your stage of faith development; don't say anything ABOUT your identity ('as a...', or 'from my perspective, ...'), just EMBODY your identity",
         "- It's totally normal to have vehement and seemingly irreconcilable differences",
         "",
         `## TONE FOR THIS POST`,
@@ -347,6 +358,8 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         `TITLE: ${topic.title}`,
         `SOURCE: ${topic.source}`,
         `DESCRIPTION: ${topic.description || topic.content || "No description available"}`,
+        `EXTRACTED TITLE: ${metadata.title || 'No metadata'}`,
+        `EXTRACTED DESCRIPTION: ${metadata.description?.substring(0, 200) || 'No metadata'}`,
         url ? `URL (embed will handle this automatically): ${url}` : `(no URL)`,
         conversation ? `CONVERSATION STARTER (include exactly as shown): ${conversation}` : `(no conversation)`,
         "",
