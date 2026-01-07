@@ -20,8 +20,8 @@ function getPersonaPrompt(personaKey) {
         ANDREA: "Andrea",
     };
     const name = nameMap[personaKey];
-    // Updated regex to match the actual file format with backticks
-    const regex = new RegExp(`"${name}": \`([\\s\\S]*?)\``, "m");
+    // Updated regex to match the actual file format - handles missing closing backticks
+    const regex = new RegExp(`"${name}": \\`([\\s\\S]*?)(?:\\`)?`, "m");
     const match = PERSONA_PROMPTS_RAW.match(regex);
     if (match && match[1]) {
         return match[1].trim();
