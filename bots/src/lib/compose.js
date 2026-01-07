@@ -361,7 +361,7 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         `DESCRIPTION: ${topic.description || topic.content || "No description available"}`,
         `EXTRACTED TITLE: ${metadata.title || 'No metadata'}`,
         `EXTRACTED DESCRIPTION: ${metadata.description?.substring(0, 200) || 'No metadata'}`,
-        url ? `URL (embed will handle this automatically): ${url}` : `(no URL)`,
+        url ? `URL (include this in your response): ${url}` : `(no URL)`,
         conversation ? `CONVERSATION STARTER (include exactly as shown): ${conversation}` : `(no conversation)`,
         "",
         `## REPLY REQUIREMENTS`,
