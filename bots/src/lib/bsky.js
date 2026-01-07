@@ -74,7 +74,7 @@ export async function createPost(agent, text, personaKey, tone, topic) {
       // Extract rich metadata using Jina AI
       const metadata = await extractUrlMetadata(url);
       
-      // Create rich external embed (WITHOUT thumbnail to avoid CID issues)
+      // Create rich external embed with thumbnail support
       const embedData = {
         $type: 'app.bsky.embed.external',
         external: {
@@ -84,10 +84,35 @@ export async function createPost(agent, text, personaKey, tone, topic) {
         }
       };
       
-      // NOTE: Skipping thumbnail for now - requires blob upload which adds complexity
-      // The embed will still show rich preview with title/description
+      // Add thumbnail if available
+      if (metadata.thumbnail) {
+        try {
+          console.log(`🖼️ Uploading thumbnail: ${metadata.thumbnail}`);
+          const thumbnailBlob = await agent.uploadBlob(metadata.thumbnail, {
+            encoding: 'image/jpeg'
+          });
+          
+          embedData.external.thumb = {
+            $type: 'blob',
+            ref: {
+              $link: thumbnailBlob.data.blob.ref.$link
+            },
+            mimeType: thumbnailBlob.data.blob.mimeType,
+            size: thumbnailBlob.data.blob.size
+          };
+          
+          console.log(`✅ Thumbnail uploaded successfully`);
+        } catch (thumbError) {
+          console.warn(`⚠️ Thumbnail upload failed: ${thumbError.message}`);
+          // Continue without thumbnail
+        }
+      }
       
       postOptions.embed = embedData;
+      
+      // Remove URL from text since we have an embed
+      text = text.replace(url, '').trim();
+      postOptions.text = text;
       
       console.log(`✅ EMBED SUCCESS: Created embed with title: "${metadata.title}", thumbnail: ${metadata.thumbnail ? 'YES' : 'NO'}`);
       console.log(`🔗 EMBED DATA:`, JSON.stringify(embedData, null, 2));
