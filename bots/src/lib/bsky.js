@@ -570,3 +570,5 @@ export async function getUnansweredMentions(agent, personaKey, state, hoursBack 
     return new Date(b.indexedAt) - new Date(a.indexedAt);
   });
 }
+
+export { extractUrlMetadata };
