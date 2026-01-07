@@ -20,7 +20,8 @@ function getPersonaPrompt(personaKey) {
         ANDREA: "Andrea",
     };
     const name = nameMap[personaKey];
-    const regex = new RegExp(`"${name}":\\s*\`([\\s\\S]*?)\``, "m");
+    // Updated regex to match the actual file format with backticks
+    const regex = new RegExp(`"${name}": \`([\\s\\S]*?)\``, "m");
     const match = PERSONA_PROMPTS_RAW.match(regex);
     if (match && match[1]) {
         return match[1].trim();
@@ -321,7 +322,7 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         "- AVOID repetitive endings like 'let us come together', 'we must do better', 'it's time for action'",
         "- DO NOT use the same catchphrases or rhetorical devices repeatedly",
         "- Each post should feel fresh and unique, not like a template",
-        "## VOICE",
+        "## VOICE FOR THIS POST",
         "- Always approach the topic from YOUR persona's unique perspective",
         "- Speak AS someone at your stage of faith development, without breaking the fourth wall and talking ABOUT your stage of faith development",
         "- It's totally normal to have vehement and seemingly irreconcilable differences",
