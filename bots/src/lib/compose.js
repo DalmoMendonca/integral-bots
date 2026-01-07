@@ -200,7 +200,15 @@ export async function ensureCompleteness(text, personaKey, config) {
         return trimmed;
     }
     
-    // Use AI to complete the thought authentically
+    // CRITICAL: Extract and preserve URL if present
+    const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
+    const urls = trimmed.match(urlRegex) || [];
+    const extractedUrl = urls[0] || '';
+    
+    // Remove URL temporarily for AI completion
+    const textWithoutUrl = extractedUrl ? trimmed.replace(extractedUrl, '').trim() : trimmed;
+    
+    // Use AI to complete thought authentically
     try {
         const mod = await import("openai");
         const OpenAI = mod.OpenAI || mod.default?.OpenAI || mod.default;
@@ -215,13 +223,13 @@ export async function ensureCompleteness(text, personaKey, config) {
             "Complete this incomplete thought authentically in your persona's voice:",
             "",
             "INCOMPLETE TEXT:",
-            trimmed,
+            textWithoutUrl,
             "",
             "REQUIREMENTS:",
             "- Complete the thought naturally in your persona's voice",
             "- Keep it under 300 characters total",
             "- End with proper punctuation (., ?, !)",
-            "- Avoid cliché phrases like 'address with courage', 'thoughts and prayers'",
+            "- Avoid cliché phrases like 'address with courage', 'thoughts and prayers', 'now more than ever'",
             "- Make it sound fresh and authentic, not like a template",
             "- DO NOT add extra context, just complete what's already there",
             "",
@@ -233,7 +241,12 @@ export async function ensureCompleteness(text, personaKey, config) {
             input: input,
         });
 
-        const completedText = resp.output_text?.trim() || trimmed;
+        let completedText = resp.output_text?.trim() || textWithoutUrl;
+        
+        // CRITICAL: Re-add the URL if it was extracted
+        if (extractedUrl) {
+            completedText = `${completedText}\n\n${extractedUrl}`;
+        }
         
         // Final validation
         if (validateCompleteSentences(completedText) && completedText.length <= 300) {
@@ -244,7 +257,7 @@ export async function ensureCompleteness(text, personaKey, config) {
             return trimmed;
         }
     } catch (error) {
-        console.warn(`[${personaKey}] AI completion failed: ${error.message}, using original`);
+        console.warn(`ensureCompleteness failed: ${error.message}`);
         return trimmed;
     }
 }
