@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-01-06T15:59:12.571Z",
+  "lastRunUtc": "2026-01-07T02:39:34.179Z",
   "bots": {
     "RUTH": {
       "seen": [
@@ -20,6 +20,9 @@
         "https://www.christiantoday.com/news/netanyahu-pledges-support-for-persecuted-christians",
         "https://www.catholicnewsagency.com/news/268881/Puerto-Rico-passes-law-recognizing-legal-personhood-of-the-unborn-child",
         "https://www.christiantoday.com/news/former-moderator-of-church-of-scotland-teams-up-with-pop-star-to-release-christmas-song"
+      ],
+      "repliedTo": [
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbsfrxwwbp2x"
       ]
     },
     "BRYCE": {
@@ -63,6 +66,9 @@
         "https://www.catholicnewsagency.com/news/268887/seek-2026-wrap",
         "https://www.christiantoday.com/news/christians-react-to-us-capture-of-maduro",
         "https://news.google.com/rss/articles/CBMikgFBVV95cUxOSlFwVGJyZGtsU1FJZzc3R0V6SW55aks5MFZ3VFNlc1UwNnhZenU1Qkhtb3B1TFhKQmxVaEdNVlRvaWpBdkg2aGg1RVAzSi10ZWlvbHJ0Mm9NcG9KbXY4WlhZam1WWUFhbkVXMS0ydDZWbVhzZWN5dHhmeEZPUlE2ajE0MFVYQ2NzRVlFOUt1M2h4QQ?oc=5"
+      ],
+      "repliedTo": [
+        "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbsggq6z4t25"
       ]
     },
     "RAYMOND": {
@@ -85,6 +91,9 @@
         "https://www.christiantoday.com/news/evangelical-vicar-accused-of-abuse-won-t-stand-trial",
         "https://www.christiantoday.com/news/abortion-was-leading-cause-of-death-worldwide-in-2025",
         "https://www.christiantoday.com/news/christian-organisations-caught-up-in-israeli-aid-agency-ban"
+      ],
+      "repliedTo": [
+        "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbrf2dlin72g"
       ]
     },
     "KENNY": {
@@ -106,6 +115,9 @@
         "https://news.google.com/rss/articles/CBMimAFBVV95cUxNV2hZZEZwakY4MUdkV2ZJYm1sSlRBY3hiOUdKRXpFenFITm5aNU9HVlhvSHhHWGkxQnI2X3JCTWZtNVY3ZkFFcjVYbEI1dEkzdktQWndhVHhLN1RVek5VTWl0eHFpZ3NlMG1DN05nVnVhZnRJYi11OXI0T1BHUXVTVWtfamFhOWhOS1FpRl9XZm1ta3hSc1ZhMQ?oc=5",
         "https://www.catholicnewsagency.com/news/268893/cardinal-encourages-mexicans-to-demand-authorities-bring-criminals-to-%20justice",
         "https://www.catholicnewsagency.com/news/268785/leo-xiv-the-world-is-saved-by-welcoming-all-without-fear"
+      ],
+      "repliedTo": [
+        "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbrstjx7sd2h"
       ]
     },
     "ANDREA": {
@@ -127,6 +139,9 @@
         "https://www.catholicnewsagency.com/news/268897/catholic-mom-spreads-ic2kg-message-to-youth-attends-first-seek-conference",
         "https://news.google.com/rss/articles/CBMimgFBVV95cUxQRFNXdmpteVBZNXFhOXpreS0zc1plY29kaElZejg3dXdjWll3RjJxWGhQdHVUb252YmlYdHhPOUxQbzhjaGN3WDFfdWhPcVpwRV9SWjV3VVlzV0djLWdVZVZ0YUxGeU1Zajl5Z0JTNVlpX1p6b1lfZGZ2RFVVMVE3WkVCNEhQUVhDZko0UjZPeGhtR2NJNV9jazl3?oc=5",
         "https://religionnews.com/2026/01/05/jubilee-year-ends-as-pope-leo-xiv-closes-holy-door-after-historic-vatican-transition/"
+      ],
+      "repliedTo": [
+        "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbsgn6euce2i"
       ]
     },
     "PARKER": {
@@ -145,8 +160,31 @@
         "https://www.thegospelcoalition.org/article/paul-helm-1940-2025/",
         "https://www.catholicnewsagency.com/news/268885/speed-dating-seek",
         "https://www.christiantoday.com/news/christians-react-to-us-capture-of-maduro"
+      ],
+      "repliedTo": [
+        "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbsg65g2ly2f"
       ]
     }
   },
-  "seenNotifications": {}
+  "seenNotifications": {
+    "RUTH": [
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbsfrxwwbp2x"
+    ],
+    "JERRY": [
+      "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbsggq6z4t25"
+    ],
+    "RAYMOND": [
+      "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbrf2dlin72g"
+    ],
+    "PARKER": [
+      "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbsg65g2ly2f"
+    ],
+    "KENNY": [
+      "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbrstjx7sd2h"
+    ],
+    "ANDREA": [
+      "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbsgn6euce2i"
+    ]
+  },
+  "performance": {}
 }
