@@ -94,11 +94,9 @@ export async function createPost(agent, text, personaKey, tone, topic) {
           
           embedData.external.thumb = {
             $type: 'blob',
-            ref: {
-              $link: thumbnailBlob.data.blob.ref.$link
-            },
-            mimeType: thumbnailBlob.data.blob.mimeType,
-            size: thumbnailBlob.data.blob.size
+            ref: thumbnailBlob.blob.ref,
+            mimeType: thumbnailBlob.blob.mimeType,
+            size: thumbnailBlob.blob.size
           };
           
           console.log(`✅ Thumbnail uploaded successfully`);
