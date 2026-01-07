@@ -24,10 +24,14 @@ function getPersonaPrompt(personaKey) {
     const regex = new RegExp(`"${name}":\\s*\`([\\s\\S]+?)\``, "m");
     const match = PERSONA_PROMPTS_RAW.match(regex);
     if (match && match[1]) {
-        return match[1].trim();
+        const fullPersonaPrompt = match[1].trim();
+        console.log(`🎭 FULL PERSONA PROMPT for ${personaKey}:`, fullPersonaPrompt.substring(0, 200) + '...');
+        return fullPersonaPrompt;
     }
     const p = PERSONAS[personaKey];
-    return `You are ${p.id}, an Integral Christianity persona at the "${p.stage}" stage. Voice: ${p.voice}. Stance: ${p.stance.join(" ")}`;
+    const fallbackPrompt = `You are ${p.id}, an Integral Christianity persona at the "${p.stage}" stage. Voice: ${p.voice}. Stance: ${p.stance.join(" ")}`;
+    console.log(`⚠️ FALLBACK to simplified persona for ${personaKey}:`, fallbackPrompt);
+    return fallbackPrompt;
 }
 
 // Randomized tones/approaches for variety - expanded for more diversity
