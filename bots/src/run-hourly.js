@@ -23,7 +23,7 @@ async function run() {
   const config = loadConfig();
   const state = loadState();
 
-  console.log(`Starting bot run - posts can occur at any time`);
+  console.log(`Starting bot run.`);
 
   const allHandles = buildAllHandles(config);
 
@@ -36,7 +36,7 @@ async function run() {
     process.exit(1);
   }
 
-  const perBotReplyBudget = Math.max(1, Math.floor(config.maxRepliesPerRun / enabledBots.length));
+  const perBotReplyBudget = Math.max(2, Math.floor(config.maxRepliesPerRun / enabledBots.length));
   const perBotPostBudget = Math.max(1, Math.floor(config.maxPostsPerRun / enabledBots.length));
 
   for (const personaKey of enabledBots) {
