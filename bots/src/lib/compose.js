@@ -300,10 +300,9 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
     // Enhanced conversation starter
     const conversation = maybeStartConversation(personaKey, allHandles, topic);
 
-    // Calculate exact budget: 300 max - URL length - newline - safety margin
-    const urlLength = url ? url.length + 1 : 0; // +1 for newline
+    // Calculate exact budget: 300 max - conversation length - safety margin (URLs handled by embed)
     const conversationLength = conversation ? conversation.length + 1 : 0;
-    const textBudget = 300 - urlLength - conversationLength - 5; // 5 char safety margin
+    const textBudget = 300 - conversationLength - 5; // 5 char safety margin, no URL needed in text
 
     // Simplified learning context since we removed complex performance tracking
     const learningContext = "";
@@ -315,14 +314,17 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         `Write a SHORT, COMPLETE Bluesky post. Your text MUST be under ${textBudget} characters.`,
         `CRITICAL: Every sentence MUST be complete. NO trailing off with "..." or incomplete thoughts.`,
         `DO NOT end with conjunctions like "and", "but", "because" without finishing the thought.`,
-        `DO NOT end with phrases like "As a pastor," or "War without..." - complete your sentences!`,
+        `Complete your sentences! Always end your text with punctuation: a period, exclamation, or question mark, as appropriate.`,
         "",
         "## ANTI-REPETITION RULES",
         "- AVOID cliché phrases like 'we must address this with courage', 'thoughts and prayers', 'now more than ever'",
         "- AVOID repetitive endings like 'let us come together', 'we must do better', 'it's time for action'",
         "- DO NOT use the same catchphrases or rhetorical devices repeatedly",
         "- Each post should feel fresh and unique, not like a template",
-        "- VARY your sentence structure and vocabulary significantly",
+        "## VOICE",
+        "- Always approach the topic from YOUR persona's unique perspective",
+        "- Speak AS someone at your stage of faith development, without breaking the fourth wall and talking ABOUT your stage of faith development",
+        "- It's totally normal to have vehement and seemingly irreconcilable differences",
         "",
         `## TONE FOR THIS POST`,
         `Approach: ${tone}`,
@@ -340,12 +342,8 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         `TITLE: ${topic.title}`,
         `SOURCE: ${topic.source}`,
         `DESCRIPTION: ${topic.description || topic.content || "No description available"}`,
-        url ? `URL (MUST include this on its own line at the end): ${url}` : `(no URL)`,
+        url ? `URL (embed will handle this automatically): ${url}` : `(no URL)`,
         conversation ? `CONVERSATION STARTER (include exactly as shown): ${conversation}` : `(no conversation)`,
-        "",
-        `## CRITICAL URL REQUIREMENT`,
-        url ? `- You MUST include the URL ${url} on its own line at the end of your post` : `- No URL to include for this topic`,
-        `- The URL should be separated from your text by at least one blank line`,
         "",
         `## REPLY REQUIREMENTS`,
         "- Add unique insights from your persona's perspective",
