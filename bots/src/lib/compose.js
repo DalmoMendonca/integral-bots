@@ -8,7 +8,7 @@ import { performanceTracker } from "./learning.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PERSONA_PROMPTS_RAW = readFileSync(join(__dirname, "integral_personas.txt"), "utf8");
 
-// Parse persona prompts from the file
+// Parse persona prompts from file
 function getPersonaPrompt(personaKey) {
     const nameMap = {
         RUTH: "Ruth",
@@ -20,8 +20,8 @@ function getPersonaPrompt(personaKey) {
         ANDREA: "Andrea",
     };
     const name = nameMap[personaKey];
-    // Updated regex to match the actual file format - handles missing closing backticks
-    const regex = new RegExp(`"${name}": \\`([\\s\\S]*?)(?:\\`)?`, "m");
+    // Simple regex to find persona content between quotes and backticks
+    const regex = new RegExp(`"${name}":\\s*\`([\\s\\S]+?)\``, "m");
     const match = PERSONA_PROMPTS_RAW.match(regex);
     if (match && match[1]) {
         return match[1].trim();
