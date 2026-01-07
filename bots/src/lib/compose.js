@@ -962,7 +962,7 @@ export async function composeReply({ personaKey, promptText, config, allHandles,
     }
     
     // Add original author tag if available
-    const originalPostAuthor = promptText.match(/@(\w+)\.?/)?.[1]; // Extract author from mention
+    const originalPostAuthor = promptText.match(/@([a-zA-Z0-9.-]+(?:\s*\.?\s*bsky\.social)?)/)?.[1]; // Extract author from mention (supports dots, hyphens, and .bsky.social)
     if (strategy === 'continue' && originalPostAuthor) {
         // Try exact match first, then with .bsky.social suffix
         const authorHandle = allHandles[originalPostAuthor] || 
