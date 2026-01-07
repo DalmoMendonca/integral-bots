@@ -130,10 +130,10 @@ function getConversationCallouts(personaKey, targetPersona) {
         },
         JERRY: {
             RAYMOND: ["How should we think about this?", "What's the principle here?"],
-            RUTH: ["How does this call us to prayer?", "Your pastoral thoughts?"]
+            RUTH: ["How does this call us to prayer?", "Your thoughts?"]
         },
         RAYMOND: {
-            KENNY: ["What's the developmental angle here?", "AQAL perspective?"],
+            KENNY: ["What's the developmental angle here?", "Bring this into perspective."],
             BRYCE: ["What data would change your mind?", "Mechanism analysis?"]
         },
         PARKER: {
@@ -141,7 +141,7 @@ function getConversationCallouts(personaKey, targetPersona) {
             KENNY: ["What about power dynamics?", "How does this affect the marginalized?"]
         },
         KENNY: {
-            RAYMOND: ["Altitude check on this?", "What's the integral view?"],
+            RAYMOND: ["What do you think?", "How do you see this?"],
             ANDREA: ["How does this serve evolution?", "Second-tier perspective?"]
         },
         ANDREA: {
@@ -164,25 +164,9 @@ export function validateCompleteSentences(text) {
         return false;
     }
     
-    // Check for MAJOR incomplete sentence patterns (more lenient)
-    const incompletePatterns = [
-        /\b(like|such as|including|for example|for instance)\s*[.!?]*$/, // Ending with examples
-        /\b(and|but|or|nor|so|yet|for)\s*$/, // Ending with conjunctions
-        /\b(although|because|since|while|whereas|when|if|unless)\s*$/, // Ending with subordinating conjunctions
-        /\.\.\.$/, // Ellipses (trailing off)
-        /\b(War|As|When|While|Although|Because|If|Since|Being|Like|Such)\s*\w*\s*…\s*$/, // Incomplete starts
-    ];
-    
-    // Only flag MAJOR issues, not minor ones
-    for (const pattern of incompletePatterns) {
-        if (pattern.test(trimmed)) {
-            return false;
-        }
-    }
-    
     // Ensure we have actual content, not just punctuation
     const contentWithoutPunctuation = trimmed.replace(/[.!?]+/g, '').trim();
-    if (contentWithoutPunctuation.length < 3) {
+    if (contentWithoutPunctuation.length < 10) {
         return false;
     }
     
