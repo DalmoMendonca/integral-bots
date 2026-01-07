@@ -98,14 +98,14 @@ export async function createPost(agent, text, personaKey, tone, topic) {
           // Handle different possible response structures
           let blobRef, mimeType, size;
           
-          if (thumbnailBlob.blob) {
-            blobRef = thumbnailBlob.blob.ref;
-            mimeType = thumbnailBlob.blob.mimeType;
-            size = thumbnailBlob.blob.size;
-          } else if (thumbnailBlob.data && thumbnailBlob.data.blob) {
+          if (thumbnailBlob.data && thumbnailBlob.data.blob) {
             blobRef = thumbnailBlob.data.blob.ref;
             mimeType = thumbnailBlob.data.blob.mimeType;
             size = thumbnailBlob.data.blob.size;
+          } else if (thumbnailBlob.blob) {
+            blobRef = thumbnailBlob.blob.ref;
+            mimeType = thumbnailBlob.blob.mimeType;
+            size = thumbnailBlob.blob.size;
           } else if (thumbnailBlob.ref) {
             blobRef = thumbnailBlob.ref;
             mimeType = thumbnailBlob.mimeType;
