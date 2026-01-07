@@ -875,7 +875,7 @@ async function generateViralResponse(personaKey, contentAnalysis, personaInsight
         "3. Include the shareable insight if appropriate",
         "4. Challenge assumptions constructively",
         "5. Create emotional resonance",
-        "6. Stay under 280 characters",
+        "6. Stay under 200 characters (to leave room for tags)",
         "",
         "## VIRAL ELEMENTS TO INCLUDE",
         "- Unexpected perspective shift",
@@ -988,15 +988,15 @@ export async function composeReply({ personaKey, promptText, config, allHandles,
         finalResponse = `${authorHandle} ${botHandle} ${finalResponse}`;
     }
 
-    // Ensure character limit (280 chars max for replies)
-    if (finalResponse.length > 280) {
-        // Extract tags and preserve them
-        const tags = finalResponse.match(/@\w+/g) || [];
+    // Ensure character limit (295 chars max for replies with tags)
+    if (finalResponse.length > 295) {
+        // Extract tags and preserve them (updated regex for longer handles)
+        const tags = finalResponse.match(/@[\w.-]+/g) || [];
         const tagText = tags.join(' ');
-        const contentWithoutTags = finalResponse.replace(/@\w+/g, '').trim();
+        const contentWithoutTags = finalResponse.replace(/@[\w.-]+/g, '').trim();
         
-        // Calculate available characters (280 - tag length - 1 for space)
-        const maxContentLength = 280 - tagText.length - 1;
+        // Calculate available characters (295 - tag length - 1 for space)
+        const maxContentLength = 295 - tagText.length - 1;
         
         if (contentWithoutTags.length > maxContentLength) {
             finalResponse = `${tagText} ${contentWithoutTags.substring(0, maxContentLength - 3)}...`;
