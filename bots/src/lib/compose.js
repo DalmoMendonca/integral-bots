@@ -980,11 +980,18 @@ export async function composeReply({ personaKey, promptText, config, allHandles,
     // Add original author tag if available
     const originalPostAuthor = promptText.match(/@(\w+)\.?/)?.[1]; // Extract author from mention
     if (strategy === 'continue' && originalPostAuthor) {
-        const authorHandle = allHandles[originalPostAuthor] || `@${originalPostAuthor}`;
+        // Try exact match first, then with .bsky.social suffix
+        const authorHandle = allHandles[originalPostAuthor] || 
+                              allHandles[`${originalPostAuthor}.bsky.social`] || 
+                              `@${originalPostAuthor}`;
         finalResponse = `${authorHandle} ${finalResponse}`;
     } else if (strategy === 'loop-in' && originalPostAuthor && botToLoopIn) {
-        const authorHandle = allHandles[originalPostAuthor] || `@${originalPostAuthor}`;
-        const botHandle = allHandles[botToLoopIn] || `@${botToLoopIn}`;
+        const authorHandle = allHandles[originalPostAuthor] || 
+                              allHandles[`${originalPostAuthor}.bsky.social`] || 
+                              `@${originalPostAuthor}`;
+        const botHandle = allHandles[botToLoopIn] || 
+                           allHandles[`${botToLoopIn}.bsky.social`] || 
+                           `@${botToLoopIn}`;
         finalResponse = `${authorHandle} ${botHandle} ${finalResponse}`;
     }
 
