@@ -49,14 +49,9 @@ export async function loginAgent({ handle, appPassword }) {
 export async function createPost(agent, text, personaKey, tone, topic) {
   const rt = await asRichText(agent, text);
   
-  // Extract URLs from text for potential embedding (cleaned regex)
-  const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
-  const urls = text.match(urlRegex) || [];
-  
-  // Clean URLs by removing trailing punctuation
-  const cleanUrls = urls.map(url => url.replace(/[)\]?]+$/, ''));
-  
-  console.log(`🔗 URL EXTRACTION: Found ${cleanUrls.length} URLs in text:`, cleanUrls);
+  // CRITICAL: Use topic URL directly for embed, don't look for it in text
+  const topicUrl = topic?.link;
+  console.log(`🔗 EMBED CHECK: Topic URL available: ${topicUrl ? 'YES' : 'NO'}`, topicUrl || '');
   
   const postOptions = {
     text: rt.text,
@@ -64,21 +59,20 @@ export async function createPost(agent, text, personaKey, tone, topic) {
     createdAt: new Date().toISOString(),
   };
   
-  // Try to create embed for first URL if found
-  if (cleanUrls.length > 0) {
-    console.log(`🔗 EMBED ATTEMPT: Creating embed for URL: ${cleanUrls[0]}`);
+  // Create embed directly from topic URL if available
+  if (topicUrl) {
+    console.log(`🔗 EMBED ATTEMPT: Creating embed for topic URL: ${topicUrl}`);
     try {
-      const url = cleanUrls[0];
-      console.log(`Creating embed for URL: ${url}`);
+      console.log(`Creating embed for URL: ${topicUrl}`);
       
       // Extract rich metadata using Jina AI
-      const metadata = await extractUrlMetadata(url);
+      const metadata = await extractUrlMetadata(topicUrl);
       
       // Create rich external embed with thumbnail support
       const embedData = {
         $type: 'app.bsky.embed.external',
         external: {
-          uri: url,
+          uri: topicUrl,
           title: metadata.title,
           description: metadata.description,
         }
@@ -114,13 +108,22 @@ export async function createPost(agent, text, personaKey, tone, topic) {
             throw new Error('Could not find blob reference in upload response');
           }
           
-          if (!blobRef || !blobRef.$link) {
+          // Handle both direct ref and nested ref structures
+          if (!blobRef || (!blobRef.$link && !blobRef.$link)) {
             throw new Error('Invalid blob reference structure');
           }
           
+          // Get the actual $link value (handle nested structures)
+          const linkRef = blobRef.$link || (blobRef.ref && blobRef.ref.$link);
+          if (!linkRef) {
+            throw new Error('Could not find $link in blob reference');
+          }
+          
+          console.log(`🔍 FINAL THUMBNAIL REF:`, JSON.stringify(linkRef, null, 2));
+          
           embedData.external.thumb = {
             $type: 'blob',
-            ref: blobRef,
+            ref: linkRef,
             mimeType: mimeType,
             size: size
           };
@@ -134,19 +137,15 @@ export async function createPost(agent, text, personaKey, tone, topic) {
       
       postOptions.embed = embedData;
       
-      // Remove URL from text since we have an embed
-      text = text.replace(url, '').trim();
-      postOptions.text = text;
-      
       console.log(`✅ EMBED SUCCESS: Created embed with title: "${metadata.title}", thumbnail: ${metadata.thumbnail ? 'YES' : 'NO'}`);
       console.log(`🔗 EMBED DATA:`, JSON.stringify(embedData, null, 2));
     } catch (e) {
-      console.warn(`❌ EMBED FAILED: Could not create embed for URL ${cleanUrls[0]}:`, e.message);
+      console.warn(`❌ EMBED FAILED: Could not create embed for topic URL ${topicUrl}:`, e.message);
       console.warn(`🔗 ERROR STACK:`, e.stack);
       // Continue without embed if it fails
     }
   } else {
-    console.log(`🔗 NO EMBED: No URLs found in text to embed`);
+    console.log(`🔗 NO EMBED: No topic URL available to embed`);
   }
 
   const result = await agent.post(postOptions);
