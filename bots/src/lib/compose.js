@@ -387,13 +387,9 @@ export async function composePost({ personaKey, topic, config, allHandles }) {
         throw new Error(`OpenAI returned empty response for ${personaKey}.`);
     }
 
-    // CRITICAL: Validate that URL is included in the response
-    if (url && !text.includes(url)) {
-        console.warn(`⚠️ AI response missing URL! Forcing inclusion...`);
-        text = `${text}\n\n${url}`;
-        console.log(`🔗 FORCED URL: Added ${url} to post`);
-    } else if (url && text.includes(url)) {
-        console.log(`✅ URL correctly included: ${url}`);
+    // CRITICAL: Don't include URL in text - embed will handle it
+    if (url) {
+        console.log(`🔗 URL available for embed: ${url}`);
     }
 
     // Validate completeness first, then length
