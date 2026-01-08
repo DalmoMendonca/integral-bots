@@ -46,6 +46,93 @@ export async function loginAgent({ handle, appPassword }) {
   return agent;
 }
 
+function decodeHtmlEntities(value) {
+  if (!value) return value;
+  return value
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&#([0-9]+);/g, (_, num) => String.fromCharCode(parseInt(num, 10)));
+}
+
+function guessImageMimeType(url) {
+  const clean = url.split("?")[0].toLowerCase();
+  if (clean.endsWith(".png")) return "image/png";
+  if (clean.endsWith(".webp")) return "image/webp";
+  if (clean.endsWith(".gif")) return "image/gif";
+  if (clean.endsWith(".avif")) return "image/avif";
+  return "image/jpeg";
+}
+
+function normalizeUrlCandidate(candidate, baseUrl) {
+  if (!candidate) return "";
+  let cleaned = decodeHtmlEntities(candidate).trim();
+  if (!cleaned) return "";
+
+  if (cleaned.startsWith("data:")) {
+    return cleaned;
+  }
+
+  try {
+    return new URL(cleaned, baseUrl).toString();
+  } catch (error) {
+    return cleaned;
+  }
+
+}
+
+function parseDataUrl(dataUrl) {
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) {
+    throw new Error("Unsupported data URL format");
+  }
+
+  const mimeType = match[1];
+  if (!mimeType.startsWith("image/")) {
+    throw new Error(`Unsupported data URL type: ${mimeType}`);
+  }
+
+  return {
+    buffer: Buffer.from(match[2], "base64"),
+    mimeType: mimeType
+  };
+}
+
+async function fetchImageBuffer(url) {
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "User-Agent": "Mozilla/5.0 (compatible; IntegralBots/1.0)",
+      "Referer": url,
+      "Accept": "image/avif,image/webp,image/*,*/*;q=0.8",
+      "Accept-Encoding": "identity"
+    },
+    redirect: "follow"
+  });
+
+  if (!response.ok) {
+    throw new Error(`Thumbnail fetch failed with status ${response.status}`);
+  }
+
+  const contentTypeHeader = response.headers.get("content-type") || "";
+  const contentType = contentTypeHeader.split(";")[0].trim().toLowerCase();
+  const mimeType = contentType || guessImageMimeType(url);
+  if (!mimeType.startsWith("image/")) {
+    throw new Error(`Thumbnail content-type is not an image: ${contentTypeHeader}`);
+  }
+
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  if (!buffer.length) {
+    throw new Error("Thumbnail response was empty");
+  }
+
+  return { buffer, mimeType, size: buffer.length };
+}
+
 export async function createPost(agent, text, personaKey, tone, topic) {
   const rt = await asRichText(agent, text);
   
@@ -81,63 +168,44 @@ export async function createPost(agent, text, personaKey, tone, topic) {
       // Add thumbnail if available
       if (metadata.thumbnail) {
         try {
-          console.log(`🖼️ Uploading thumbnail: ${metadata.thumbnail}`);
-          const thumbnailBlob = await agent.uploadBlob(metadata.thumbnail, {
-            encoding: 'image/jpeg'
-          });
-          
-          // Debug the actual structure
-          console.log(`🔍 THUMBNAIL BLOB STRUCTURE:`, JSON.stringify(thumbnailBlob, null, 2));
-          
-          // Handle different possible response structures
-          let blobRef, mimeType, size;
-          
-          if (thumbnailBlob.data && thumbnailBlob.data.blob) {
-            blobRef = thumbnailBlob.data.blob.ref;
-            mimeType = thumbnailBlob.data.blob.mimeType;
-            size = thumbnailBlob.data.blob.size;
-          } else if (thumbnailBlob.blob) {
-            blobRef = thumbnailBlob.blob.ref;
-            mimeType = thumbnailBlob.blob.mimeType;
-            size = thumbnailBlob.blob.size;
-          } else if (thumbnailBlob.ref) {
-            blobRef = thumbnailBlob.ref;
-            mimeType = thumbnailBlob.mimeType;
-            size = thumbnailBlob.size;
+          const thumbnailUrl = normalizeUrlCandidate(metadata.thumbnail, topicUrl);
+          if (!thumbnailUrl) {
+            throw new Error("Thumbnail URL missing after normalization");
+          }
+
+          console.log(`Uploading thumbnail: ${thumbnailUrl}`);
+
+          let imageBuffer;
+          let mimeType;
+          if (thumbnailUrl.startsWith("data:")) {
+            const parsed = parseDataUrl(thumbnailUrl);
+            imageBuffer = parsed.buffer;
+            mimeType = parsed.mimeType;
           } else {
-            throw new Error('Could not find blob reference in upload response');
+            const fetched = await fetchImageBuffer(thumbnailUrl);
+            imageBuffer = fetched.buffer;
+            mimeType = fetched.mimeType;
           }
-          
-          // Handle both direct ref and nested ref structures
-          if (!blobRef || (!blobRef.$link && !blobRef.$link)) {
-            throw new Error('Invalid blob reference structure');
+
+          const thumbnailBlob = await agent.uploadBlob(imageBuffer, {
+            encoding: mimeType
+          });
+
+          const blobData = thumbnailBlob?.data?.blob || thumbnailBlob?.blob || thumbnailBlob;
+          if (!blobData || !blobData.ref) {
+            throw new Error("Could not find blob data in upload response");
           }
-          
-          // Get the actual $link value (handle nested structures)
-          const linkRef = blobRef.$link || (blobRef.ref && blobRef.ref.$link);
-          if (!linkRef) {
-            throw new Error('Could not find $link in blob reference');
-          }
-          
-          console.log(`🔍 FINAL THUMBNAIL REF:`, JSON.stringify(linkRef, null, 2));
-          
-          embedData.external.thumb = {
-            $type: 'blob',
-            ref: linkRef,
-            mimeType: mimeType,
-            size: size
-          };
-          
-          console.log(`✅ Thumbnail uploaded successfully`);
+
+          embedData.external.thumb = blobData;
+          console.log("Thumbnail uploaded successfully");
         } catch (thumbError) {
-          console.warn(`⚠️ Thumbnail upload failed: ${thumbError.message}`);
+          console.warn(`Thumbnail upload failed: ${thumbError.message}`);
           // Continue without thumbnail
         }
       }
-      
+
       postOptions.embed = embedData;
-      
-      console.log(`✅ EMBED SUCCESS: Created embed with title: "${metadata.title}", thumbnail: ${metadata.thumbnail ? 'YES' : 'NO'}`);
+      console.log(`✅ EMBED SUCCESS: Created embed with title: "${metadata.title}", thumbnail: ${embedData.external.thumb ? 'YES' : 'NO'}`);
       console.log(`🔗 EMBED DATA:`, JSON.stringify(embedData, null, 2));
     } catch (e) {
       console.warn(`❌ EMBED FAILED: Could not create embed for topic URL ${topicUrl}:`, e.message);
@@ -224,7 +292,7 @@ async function extractUrlMetadata(url) {
     }
     
     // Strategy 2: Direct HTML parsing with multiple fallbacks
-    if (!title || title.length < 3) {
+    if (!title || title.length < 3 || !description || !thumbnail) {
       try {
         console.log(`🌐 Strategy 2: Trying direct HTML parsing`);
         
@@ -249,7 +317,7 @@ async function extractUrlMetadata(url) {
             // Method 2a: Open Graph title
             const ogTitleMatch = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
             if (ogTitleMatch && ogTitleMatch[1]) {
-              title = ogTitleMatch[1];
+              title = decodeHtmlEntities(ogTitleMatch[1]);
               console.log(`📝 Found OG title: ${title}`);
             }
           }
@@ -258,7 +326,7 @@ async function extractUrlMetadata(url) {
             // Method 2b: Twitter title
             const twitterTitleMatch = html.match(/<meta[^>]+name=["']twitter:title["'][^>]+content=["']([^"']+)["']/i);
             if (twitterTitleMatch && twitterTitleMatch[1]) {
-              title = twitterTitleMatch[1];
+              title = decodeHtmlEntities(twitterTitleMatch[1]);
               console.log(`📝 Found Twitter title: ${title}`);
             }
           }
@@ -267,7 +335,7 @@ async function extractUrlMetadata(url) {
             // Method 2c: HTML title tag
             const htmlTitleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
             if (htmlTitleMatch && htmlTitleMatch[1]) {
-              title = htmlTitleMatch[1].trim();
+              title = decodeHtmlEntities(htmlTitleMatch[1].trim());
               console.log(`📝 Found HTML title: ${title}`);
             }
           }
@@ -277,7 +345,7 @@ async function extractUrlMetadata(url) {
             // Method 2a: Open Graph description
             const ogDescMatch = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
             if (ogDescMatch && ogDescMatch[1]) {
-              description = ogDescMatch[1];
+              description = decodeHtmlEntities(ogDescMatch[1]);
               console.log(`📝 Found OG description: ${description.substring(0, 50)}...`);
             }
           }
@@ -286,7 +354,7 @@ async function extractUrlMetadata(url) {
             // Method 2b: Twitter description
             const twitterDescMatch = html.match(/<meta[^>]+name=["']twitter:description["'][^>]+content=["']([^"']+)["']/i);
             if (twitterDescMatch && twitterDescMatch[1]) {
-              description = twitterDescMatch[1];
+              description = decodeHtmlEntities(twitterDescMatch[1]);
               console.log(`📝 Found Twitter description: ${description.substring(0, 50)}...`);
             }
           }
@@ -295,12 +363,30 @@ async function extractUrlMetadata(url) {
             // Method 2c: Meta description
             const metaDescMatch = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
             if (metaDescMatch && metaDescMatch[1]) {
-              description = metaDescMatch[1];
+              description = decodeHtmlEntities(metaDescMatch[1]);
               console.log(`📝 Found meta description: ${description.substring(0, 50)}...`);
             }
           }
           
           // Extract thumbnail with multiple methods
+          if (!thumbnail) {
+            // Method 2a: Open Graph secure image
+            const ogImageSecureMatch = html.match(/<meta[^>]+property=["']og:image:secure_url["'][^>]+content=["']([^"']+)["']/i);
+            if (ogImageSecureMatch && ogImageSecureMatch[1]) {
+              thumbnail = ogImageSecureMatch[1];
+              console.log(`Found OG secure image: ${thumbnail}`);
+            }
+          }
+
+          if (!thumbnail) {
+            // Method 2b: Open Graph image URL
+            const ogImageUrlMatch = html.match(/<meta[^>]+property=["']og:image:url["'][^>]+content=["']([^"']+)["']/i);
+            if (ogImageUrlMatch && ogImageUrlMatch[1]) {
+              thumbnail = ogImageUrlMatch[1];
+              console.log(`Found OG image URL: ${thumbnail}`);
+            }
+          }
+
           if (!thumbnail) {
             // Method 2a: Open Graph image
             const ogImageMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
@@ -340,10 +426,14 @@ async function extractUrlMetadata(url) {
       console.log(`📝 Using hostname fallback: ${title}`);
     }
     
+    if (title) {
+      title = decodeHtmlEntities(title).replace(/\s+/g, " ").trim();
+    }
+
     // Clean up description
     if (description) {
       // Remove extra whitespace and newlines
-      description = description.replace(/\s+/g, ' ').trim();
+      description = decodeHtmlEntities(description).replace(/\s+/g, " ").trim();
       
       // Truncate if too long
       if (description.length > 200) {
@@ -358,13 +448,7 @@ async function extractUrlMetadata(url) {
     
     // Clean up thumbnail URL
     if (thumbnail) {
-      // Convert relative URLs to absolute
-      if (thumbnail.startsWith('//')) {
-        thumbnail = `https:${thumbnail}`;
-      } else if (thumbnail.startsWith('/')) {
-        const urlObj = new URL(url);
-        thumbnail = `${urlObj.protocol}//${urlObj.host}${thumbnail}`;
-      }
+      thumbnail = normalizeUrlCandidate(thumbnail, url);
     }
     
     console.log(`✅ Final metadata - Title: "${title}", Description: "${description.substring(0, 50)}...", Thumbnail: ${thumbnail ? 'YES' : 'NO'}`);
