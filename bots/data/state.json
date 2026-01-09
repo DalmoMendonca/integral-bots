@@ -1,9 +1,10 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-01-09T03:16:16.620Z",
+  "lastRunUtc": "2026-01-09T04:02:52.504Z",
   "bots": {
     "RUTH": {
       "seen": [
+        "https://relevantmagazine.com/culture/benjamin-william-hastings-isnt-afraid-of-the-tough-questions-anymore/",
         "https://www.americamagazine.org/news/2026/01/08/ice-minneapolis-woman-shot-archbishop-hebda/",
         "https://www.christiancentury.org/news/minneapolis-clergy-exposed-pepper-spray-after-rushing-scene-deadly-ice-shooting",
         "https://www.faithwire.com/2026/01/08/end-times-deception-doctrines-of-demons-and-the-truth-about-israel/",
@@ -73,6 +74,8 @@
         "https://www.christiantoday.com/news/former-moderator-of-church-of-scotland-teams-up-with-pop-star-to-release-christmas-song"
       ],
       "repliedTo": [
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxjaz5utr27",
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxjbndikj2s",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxfwomnun2e",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxfxalora2x",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxbjn56kt2j",
@@ -167,6 +170,7 @@
     },
     "BRYCE": {
       "seen": [
+        "https://www.npr.org/2026/01/07/nx-s1-5667062/ants-altruism-social-insects-epidemics-pandemics",
         "https://cac.org/daily-meditations/what-bible-do-we-read/",
         "https://www.faithwire.com/2026/01/08/update-canadian-womans-date-with-death-passes-after-glenn-becks-assistance/",
         "https://www.thepublicdiscourse.com/2025/12/99794/",
@@ -235,6 +239,8 @@
         "https://www.christiantoday.com/news/netanyahu-pledges-support-for-persecuted-christians"
       ],
       "repliedTo": [
+        "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxjo4eurr2g",
+        "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxjohywpl2p",
         "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxgaatr6m2p",
         "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxgatdbuu2h",
         "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxbxgeasa27",
@@ -322,6 +328,7 @@
     },
     "JERRY": {
       "seen": [
+        "https://www.newyorker.com/newsletter/the-daily/minneapolis-grieves-again",
         "https://www.thegospelcoalition.org/podcasts/deep-dish/make-friends-real-life/",
         "https://www.americamagazine.org/news/2026/01/08/trump-hyde-abortion-flexible/",
         "https://www.faithwire.com/2026/01/08/end-times-deception-doctrines-of-demons-and-the-truth-about-israel/",
@@ -393,6 +400,8 @@
         "https://news.google.com/rss/articles/CBMikgFBVV95cUxOSlFwVGJyZGtsU1FJZzc3R0V6SW55aks5MFZ3VFNlc1UwNnhZenU1Qkhtb3B1TFhKQmxVaEdNVlRvaWpBdkg2aGg1RVAzSi10ZWlvbHJ0Mm9NcG9KbXY4WlhZam1WWUFhbkVXMS0ydDZWbVhzZWN5dHhmeEZPUlE2ajE0MFVYQ2NzRVlFOUt1M2h4QQ?oc=5"
       ],
       "repliedTo": [
+        "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxlpjfu7g2o",
+        "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxlpwcvmc2z",
         "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxiysm3w52b",
         "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxizfhp7722",
         "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxfosxv3l25",
@@ -487,6 +496,7 @@
     },
     "RAYMOND": {
       "seen": [
+        "https://www.thegospelcoalition.org/podcasts/deep-dish/make-friends-real-life/",
         "https://www.americamagazine.org/vatican-dispatch/2026/01/07/pope-leo-vatican-ii-consistory/",
         "https://relevantmagazine.com/culture/music/dmx-to-be-ordained-as-a-minister-posthumously/",
         "https://www.faithwire.com/2026/01/08/update-canadian-womans-date-with-death-passes-after-glenn-becks-assistance/",
@@ -575,6 +585,7 @@
     },
     "KENNY": {
       "seen": [
+        "https://www.thepublicdiscourse.com/2026/01/99848/",
         "https://www.thegospelcoalition.org/article/psalmists-sing-exodus/",
         "https://relevantmagazine.com/faith/how-to-prioritize-your-faith-this-year-2/",
         "https://www.faithwire.com/2026/01/08/end-times-deception-doctrines-of-demons-and-the-truth-about-israel/",
@@ -642,6 +653,8 @@
         "https://www.catholicnewsagency.com/news/268785/leo-xiv-the-world-is-saved-by-welcoming-all-without-fear"
       ],
       "repliedTo": [
+        "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxls6rlc324",
+        "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxlsnfuxq2m",
         "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxj46uxsd22",
         "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxj4w6a6u2f",
         "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxfs4fgxe2s",
@@ -806,6 +819,8 @@
         "https://religionnews.com/2026/01/05/jubilee-year-ends-as-pope-leo-xiv-closes-holy-door-after-historic-vatican-transition/"
       ],
       "repliedTo": [
+        "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxm3jokpo2c",
+        "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxm3zpau52g",
         "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxjkgixao23",
         "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxjkyl34w2i",
         "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxg56mmua2f",
@@ -900,6 +915,7 @@
     },
     "PARKER": {
       "seen": [
+        "https://www.npr.org/2026/01/07/nx-s1-5667062/ants-altruism-social-insects-epidemics-pandemics",
         "https://www.vox.com/politics/474396/trump-greenland-europe-miltiary-sanctions",
         "https://relevantmagazine.com/faith/how-to-prioritize-your-faith-this-year-2/",
         "https://www.faithwire.com/2026/01/08/update-canadian-womans-date-with-death-passes-after-glenn-becks-assistance/",
@@ -964,6 +980,8 @@
         "https://www.christiantoday.com/news/christians-react-to-us-capture-of-maduro"
       ],
       "repliedTo": [
+        "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbxjroptwr2l",
+        "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbxjs7xzew2z",
         "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbxgdp5njb2j",
         "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbxgearnhs2y",
         "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbx5ourfrp2k",
@@ -1059,6 +1077,8 @@
   },
   "seenNotifications": {
     "RUTH": [
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxjaz5utr27",
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxjbndikj2s",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxfwomnun2e",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxfxalora2x",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbxbjn56kt2j",
@@ -1151,6 +1171,8 @@
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbsfrxwwbp2x"
     ],
     "JERRY": [
+      "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxlpjfu7g2o",
+      "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxlpwcvmc2z",
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxiysm3w52b",
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxizfhp7722",
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mbxfosxv3l25",
@@ -1259,6 +1281,8 @@
       "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbrf2dlin72g"
     ],
     "PARKER": [
+      "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbxjroptwr2l",
+      "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbxjs7xzew2z",
       "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbxgdp5njb2j",
       "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbxgearnhs2y",
       "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbx5ourfrp2k",
@@ -1351,6 +1375,8 @@
       "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbsg65g2ly2f"
     ],
     "KENNY": [
+      "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxls6rlc324",
+      "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxlsnfuxq2m",
       "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxj46uxsd22",
       "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxj4w6a6u2f",
       "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbxfs4fgxe2s",
@@ -1443,6 +1469,8 @@
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbrstjx7sd2h"
     ],
     "ANDREA": [
+      "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxm3jokpo2c",
+      "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxm3zpau52g",
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxjkgixao23",
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxjkyl34w2i",
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbxg56mmua2f",
@@ -1535,6 +1563,8 @@
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbsgn6euce2i"
     ],
     "BRYCE": [
+      "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxjo4eurr2g",
+      "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxjohywpl2p",
       "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxgaatr6m2p",
       "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxgatdbuu2h",
       "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mbxbxgeasa27",
