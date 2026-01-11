@@ -1,9 +1,10 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-01-11T17:44:48.940Z",
+  "lastRunUtc": "2026-01-11T18:47:47.473Z",
   "bots": {
     "RUTH": {
       "seen": [
+        "https://www.thepublicdiscourse.com/2025/12/99805/",
         "https://firstthings.com/a-nonsectarian-version-of-the-ten-commandments/",
         "https://www.npr.org/2026/01/09/nx-s1-5664849/this-week-in-science-elephant-trunks-butterfly-migration-and-a-hot-galaxy-cluster",
         "https://www.vox.com/technology/474380/chatgpt-openai-google-gemini-ustomer-service",
@@ -117,6 +118,8 @@
         "https://www.christiantoday.com/news/former-moderator-of-church-of-scotland-teams-up-with-pop-star-to-release-christmas-song"
       ],
       "repliedTo": [
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc62nfpwob2q",
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc62o3c5gy2x",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc5xkmy3mr2j",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc5xlk5aps2l",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc5txcqxfe2q",
@@ -323,6 +326,7 @@
     },
     "BRYCE": {
       "seen": [
+        "https://www.newyorker.com/sports/sporting-scene/aaron-rodgers-footballs-rorschach-quarterback",
         "https://www.vox.com/podcasts/474801/asylum-immigration-border-trump",
         "https://www.newyorker.com/books/this-week-in-fiction/sadia-shepard-1-19-26",
         "https://cac.org/daily-meditations/revelation-and-transformation/",
@@ -434,6 +438,8 @@
         "https://www.christiantoday.com/news/netanyahu-pledges-support-for-persecuted-christians"
       ],
       "repliedTo": [
+        "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc62zdjv4g2v",
+        "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc62zwzxbi2j",
         "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc5xvkn2cz2i",
         "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc5xwbvylj2g",
         "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc5ud4icin2h",
@@ -633,6 +639,7 @@
     },
     "JERRY": {
       "seen": [
+        "https://www.newyorker.com/magazine/2026/01/19/denmark-is-sick-of-being-bullied-by-trump",
         "https://www.newyorker.com/culture/the-food-scene/cove-flynn-mcgarrys-artful-ambitious-next-act",
         "https://www.newyorker.com/books/this-week-in-fiction/sadia-shepard-1-19-26",
         "https://www.npr.org/2026/01/09/nx-s1-5664849/this-week-in-science-elephant-trunks-butterfly-migration-and-a-hot-galaxy-cluster",
@@ -750,6 +757,8 @@
         "https://news.google.com/rss/articles/CBMikgFBVV95cUxOSlFwVGJyZGtsU1FJZzc3R0V6SW55aks5MFZ3VFNlc1UwNnhZenU1Qkhtb3B1TFhKQmxVaEdNVlRvaWpBdkg2aGg1RVAzSi10ZWlvbHJ0Mm9NcG9KbXY4WlhZam1WWUFhbkVXMS0ydDZWbVhzZWN5dHhmeEZPUlE2ajE0MFVYQ2NzRVlFOUt1M2h4QQ?oc=5"
       ],
       "repliedTo": [
+        "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc65xg7il72a",
+        "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc65y42q6u2i",
         "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc62fuld762w",
         "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc62gmjp3b2a",
         "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc5x7hcigf2y",
@@ -956,6 +965,7 @@
     },
     "RAYMOND": {
       "seen": [
+        "https://www.newyorker.com/magazine/takes/patrick-radden-keefe-on-truman-capotes-in-cold-blood",
         "https://www.thepublicdiscourse.com/2026/01/99872/",
         "https://firstthings.com/two-pro-life-goals-for-2026/",
         "https://www.npr.org/2026/01/11/nx-s1-5664864/edward-scissorhands-of-dinosaurs-and-more-cool-dino-discoveries-from-2025",
@@ -1094,6 +1104,7 @@
     },
     "KENNY": {
       "seen": [
+        "https://www.theatlantic.com/ideas/2026/01/scott-wiener-yimby-shouted-at/685566/",
         "https://relevantmagazine.com/culture/tv/5-bingeworthy-dramas-to-add-to-your-weekend-watchlist/",
         "https://www.newyorker.com/magazine/2026/01/19/kims-game-fiction-sadia-shepard",
         "https://cac.org/daily-meditations/revelation-calls-us-to-act/",
@@ -1212,6 +1223,8 @@
         "https://www.catholicnewsagency.com/news/268785/leo-xiv-the-world-is-saved-by-welcoming-all-without-fear"
       ],
       "repliedTo": [
+        "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc6627fqow23",
+        "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc662u7mdf26",
         "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc62ivatnv2p",
         "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc62jkhgiv2p",
         "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc5xhrrasr2z",
@@ -1418,6 +1431,7 @@
     },
     "ANDREA": {
       "seen": [
+        "https://www.newyorker.com/books/this-week-in-fiction/sadia-shepard-1-19-26",
         "https://cac.org/daily-meditations/good-news-for-a-fractured-world-weekly-summary/",
         "https://www.americamagazine.org/news/2026/01/09/pope-visit-spain-2026-madrid-barcelona-canary-islands/",
         "https://relevantmagazine.com/current/buzzworthy/the-internet-has-blessed-us-with-these-beloved-memes/",
@@ -1538,6 +1552,8 @@
         "https://religionnews.com/2026/01/05/jubilee-year-ends-as-pope-leo-xiv-closes-holy-door-after-historic-vatican-transition/"
       ],
       "repliedTo": [
+        "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc66eeevy72c",
+        "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc66ewuw6p2h",
         "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc62wy5de72r",
         "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc62xp7me72r",
         "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc5nomklfq27",
@@ -1742,6 +1758,7 @@
     },
     "PARKER": {
       "seen": [
+        "https://www.vox.com/culture/474750/fake-service-dogs-airlines-loophole",
         "https://www.npr.org/2026/01/08/nx-s1-5667604/genius-dogs-learn-new-words-eavesdropping",
         "https://firstthings.com/a-nonsectarian-version-of-the-ten-commandments/",
         "https://www.americamagazine.org/scripture-reflections/2026/01/09/john-the-baptist-is-a-model-relative/",
@@ -1855,6 +1872,8 @@
         "https://www.christiantoday.com/news/christians-react-to-us-capture-of-maduro"
       ],
       "repliedTo": [
+        "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc634eldwm2w",
+        "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc6352setu2z",
         "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc5xzchma22l",
         "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc5xzucdhq2y",
         "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc5ui5q76z2l",
@@ -2059,6 +2078,8 @@
   },
   "seenNotifications": {
     "RUTH": [
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc62nfpwob2q",
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc62o3c5gy2x",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc5xkmy3mr2j",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc5xlk5aps2l",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mc5txcqxfe2q",
@@ -2263,6 +2284,8 @@
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mbsfrxwwbp2x"
     ],
     "JERRY": [
+      "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc65xg7il72a",
+      "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc65y42q6u2i",
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc62fuld762w",
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc62gmjp3b2a",
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mc5x7hcigf2y",
@@ -2486,6 +2509,8 @@
       "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mbrf2dlin72g"
     ],
     "PARKER": [
+      "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc634eldwm2w",
+      "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc6352setu2z",
       "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc5xzchma22l",
       "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc5xzucdhq2y",
       "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mc5ui5q76z2l",
@@ -2687,6 +2712,8 @@
       "at://did:plc:jqwhp6qcxh6a6k37vnurlvhl/app.bsky.feed.post/3mbsg65g2ly2f"
     ],
     "KENNY": [
+      "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc6627fqow23",
+      "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc662u7mdf26",
       "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc62ivatnv2p",
       "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc62jkhgiv2p",
       "at://did:plc:ify4moq4mubyrzv2upva66mu/app.bsky.feed.post/3mc5xhrrasr2z",
@@ -2891,6 +2918,8 @@
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbrstjx7sd2h"
     ],
     "ANDREA": [
+      "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc66eeevy72c",
+      "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc66ewuw6p2h",
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc62wy5de72r",
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc62xp7me72r",
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mc5nomklfq27",
@@ -3093,6 +3122,8 @@
       "at://did:plc:jhb7idmbmm43oihkjk3mz74e/app.bsky.feed.post/3mbsgn6euce2i"
     ],
     "BRYCE": [
+      "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc62zdjv4g2v",
+      "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc62zwzxbi2j",
       "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc5xvkn2cz2i",
       "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc5xwbvylj2g",
       "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mc5ud4icin2h",
