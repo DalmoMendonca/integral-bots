@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-03-17T21:33:09.129Z",
+  "lastRunUtc": "2026-03-18T03:26:37.033Z",
   "bots": {
     "RUTH": {
       "seen": [
@@ -206,6 +206,8 @@
         "https://thefederalist.com/2026/02/13/virginia-high-court-greenlights-democrat-effort-to-give-millions-of-republicans-a-single-seat-in-congress/"
       ],
       "repliedTo": [
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhcfoxdj2m27",
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhcfpmu7hg2h",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhb7mnydel2y",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhb7ndh2mj2g",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhayl3ip7m22",
@@ -453,13 +455,12 @@
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mft44r2vyq2c",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mft45aqyf322",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfstnd43hl2t",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfstnx5ffr2d",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfrx74actr2d",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfrx7rk3fy22"
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfstnx5ffr2d"
       ]
     },
     "BRYCE": {
       "seen": [
+        "https://www.christiancentury.org/lectionary/march-22-lent-5a-ezekiel-37-1-14-john-11-1-45",
         "https://www.faithwire.com/2026/03/09/formerly-gay-man-who-faced-jail-after-sharing-testimony-of-finding-god-wins-big/",
         "https://www.faithwire.com/2026/03/09/staggering-new-data-reveals-decline-in-importance-of-faith-in-americans-lives/",
         "https://www.thepublicdiscourse.com/2026/03/100475/",
@@ -658,10 +659,11 @@
         "https://thefederalist.com/2026/02/16/exclusive-chip-roy-lays-out-how-senate-can-vote-on-save-act-without-nuking-filibuster/",
         "https://firstthings.com/natural-law-needs-revelation/",
         "https://www.npr.org/2026/02/13/nx-s1-5712808/nasa-spacex-crew-12-launch-iss",
-        "https://relevantmagazine.com/life5/tim-tebow-on-finding-your-true-purpose/",
-        "https://www.newyorker.com/cartoons/daily-cartoon/monday-february-16th-immersive-experience"
+        "https://relevantmagazine.com/life5/tim-tebow-on-finding-your-true-purpose/"
       ],
       "repliedTo": [
+        "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhcfvlob372m",
+        "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhcfwbd6vp2m",
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhb7pckdqx2n",
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhb7pvkwqi2h",
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhayomwq7w27",
@@ -909,9 +911,7 @@
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mftg3c224i2u",
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mftg3ovgpc2i",
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mft4bm33ze2n",
-        "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mft4cazzup2m",
-        "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mfstqfaeoa27",
-        "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mfstqyfe4x2l"
+        "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mft4cazzup2m"
       ]
     },
     "JERRY": {
@@ -3197,6 +3197,8 @@
   },
   "seenNotifications": {
     "RUTH": [
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhcfoxdj2m27",
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhcfpmu7hg2h",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhb7mnydel2y",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhb7ndh2mj2g",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhayl3ip7m22",
@@ -3444,9 +3446,7 @@
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mft44r2vyq2c",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mft45aqyf322",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfstnd43hl2t",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfstnx5ffr2d",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfrx74actr2d",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfrx7rk3fy22"
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfstnx5ffr2d"
     ],
     "JERRY": [
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mhbcrtxfnk2a",
@@ -4709,6 +4709,8 @@
       "at://did:plc:twa5xc75ocvj7u6xfluni5sf/app.bsky.feed.post/3mfswsbl7lr2k"
     ],
     "BRYCE": [
+      "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhcfvlob372m",
+      "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhcfwbd6vp2m",
       "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhb7pckdqx2n",
       "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhb7pvkwqi2h",
       "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhayomwq7w27",
@@ -4956,9 +4958,7 @@
       "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mftg3c224i2u",
       "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mftg3ovgpc2i",
       "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mft4bm33ze2n",
-      "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mft4cazzup2m",
-      "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mfstqfaeoa27",
-      "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mfstqyfe4x2l"
+      "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mft4cazzup2m"
     ]
   },
   "performance": {}
