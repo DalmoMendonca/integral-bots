@@ -1,9 +1,10 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-03-19T07:40:43.009Z",
+  "lastRunUtc": "2026-03-19T09:37:25.729Z",
   "bots": {
     "RUTH": {
       "seen": [
+        "https://www.faithwire.com/2026/03/18/ive-never-seen-it-ozzy-osbournes-son-answers-rumors-his-dad-practiced-the-occult/",
         "https://www.christiancentury.org/books/theology-self-help-according-thecla",
         "https://relevantmagazine.com/culture/pluribus-creator-vince-gilligan-says-hes-done-writing-bad-guys/",
         "https://www.christiancentury.org/voices/why-i-don-t-label-progressive-christianity",
@@ -202,10 +203,11 @@
         "https://www.thepublicdiscourse.com/2026/02/100159/",
         "https://www.vox.com/future-perfect/479200/ai-romance-scams-valentines-day",
         "https://www.americamagazine.org/vatican-dispatch/2026/02/15/pope-leo-sends-greetings-for-the-lunar-new-year/",
-        "https://www.newyorker.com/puzzles-and-games-dept/shuffalo/2026/02/15",
-        "https://www.thegospelcoalition.org/article/lost-art-listening-sermons/"
+        "https://www.newyorker.com/puzzles-and-games-dept/shuffalo/2026/02/15"
       ],
       "repliedTo": [
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhekfaunmi2c",
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhekfxl7zn2d",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhenq3upvs2o",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhenqmvjqd2h",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhfa2b3igg2d",
@@ -453,13 +455,12 @@
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxzybsenz2d",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxzyoya3h2c",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbccoir2t",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbuawxd2d",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxk42f4de2d",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxk4mp2kn2e"
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbuawxd2d"
       ]
     },
     "BRYCE": {
       "seen": [
+        "https://www.vox.com/podcasts/483033/polymarket-kalshi-betting-iran-war-assassination-missile-strikes",
         "https://www.theatlantic.com/national-security/2026/03/the-iran-wars-next-threat-is-to-food-and-water/686435/",
         "https://www.christiancentury.org/books/ufw-march-and-writing-catholic-history",
         "https://www.christiancentury.org/art/michelle-angela-ortiz-s-delmy-harrisburg-top-and-eres-mi-todo-philadelphia-bottom-familias",
@@ -658,8 +659,7 @@
         "https://www.christiancentury.org/books/abstinence-and-agency",
         "https://thefederalist.com/2026/02/17/conservative-law-firm-picks-up-dobbs-litigator-to-fuel-more-supreme-court-victories/",
         "https://relevantmagazine.com/culture/jemar-tisby-how-our-past-can-prepare-us-for-our-future/",
-        "https://www.christiancentury.org/news/jesse-jackson-dies-84",
-        "https://www.faithwire.com/2026/02/17/china-biowarfare-lab-found-in-us-neighborhood/"
+        "https://www.christiancentury.org/news/jesse-jackson-dies-84"
       ],
       "repliedTo": [
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhew4lkigl2n",
@@ -3197,6 +3197,8 @@
   },
   "seenNotifications": {
     "RUTH": [
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhekfaunmi2c",
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhekfxl7zn2d",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhenq3upvs2o",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhenqmvjqd2h",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhfa2b3igg2d",
@@ -3444,9 +3446,7 @@
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxzybsenz2d",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxzyoya3h2c",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbccoir2t",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbuawxd2d",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxk42f4de2d",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxk4mp2kn2e"
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbuawxd2d"
     ],
     "JERRY": [
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mhevvttlbd2a",
