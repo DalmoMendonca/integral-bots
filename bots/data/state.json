@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-03-19T03:26:41.106Z",
+  "lastRunUtc": "2026-03-19T05:46:24.223Z",
   "bots": {
     "RUTH": {
       "seen": [
@@ -206,6 +206,8 @@
         "https://thefederalist.com/2026/02/14/from-chuck-to-aoc-here-are-the-worst-people-of-the-week/"
       ],
       "repliedTo": [
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhfa2b3igg2d",
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhfa2txeh32f",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhew2dw7dq2g",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhew2w53mi27",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhesbtuod62e",
@@ -453,13 +455,12 @@
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxk42f4de2d",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxk4mp2kn2e",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfx3a6rzal2h",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfx3astayz2y",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfwr5jmpmp2t",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfwr647yh72t"
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfx3astayz2y"
       ]
     },
     "BRYCE": {
       "seen": [
+        "https://www.christiancentury.org/books/ufw-march-and-writing-catholic-history",
         "https://www.christiancentury.org/art/michelle-angela-ortiz-s-delmy-harrisburg-top-and-eres-mi-todo-philadelphia-bottom-familias",
         "https://www.theatlantic.com/technology/2026/03/emanuel-fabian-threats-polymarket/686454/",
         "https://www.americamagazine.org/news/2026/03/18/cardinal-pizzaballa-using-gods-name-justify-war-gravest-sin/",
@@ -658,8 +659,7 @@
         "https://relevantmagazine.com/culture/jemar-tisby-how-our-past-can-prepare-us-for-our-future/",
         "https://www.christiancentury.org/news/jesse-jackson-dies-84",
         "https://www.faithwire.com/2026/02/17/china-biowarfare-lab-found-in-us-neighborhood/",
-        "https://thefederalist.com/2026/02/17/stop-another-major-medicaid-money-laundering-scam-before-its-too-late/",
-        "https://relevantmagazine.com/culture/tech-gaming/millions-are-using-christian-chatbots-for-spiritual-growth-we-talk-to-experts-on-both-sides-of-the-controversial-ai-trend/"
+        "https://thefederalist.com/2026/02/17/stop-another-major-medicaid-money-laundering-scam-before-its-too-late/"
       ],
       "repliedTo": [
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhew4lkigl2n",
@@ -3197,6 +3197,8 @@
   },
   "seenNotifications": {
     "RUTH": [
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhfa2b3igg2d",
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhfa2txeh32f",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhew2dw7dq2g",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhew2w53mi27",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhesbtuod62e",
@@ -3444,9 +3446,7 @@
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxk42f4de2d",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxk4mp2kn2e",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfx3a6rzal2h",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfx3astayz2y",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfwr5jmpmp2t",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfwr647yh72t"
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfx3astayz2y"
     ],
     "JERRY": [
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mhevvttlbd2a",
