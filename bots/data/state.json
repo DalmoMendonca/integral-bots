@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-03-19T09:37:25.729Z",
+  "lastRunUtc": "2026-03-19T13:52:17.906Z",
   "bots": {
     "RUTH": {
       "seen": [
@@ -206,6 +206,7 @@
         "https://www.newyorker.com/puzzles-and-games-dept/shuffalo/2026/02/15"
       ],
       "repliedTo": [
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhdqj7744727",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhekfaunmi2c",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhekfxl7zn2d",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhenq3upvs2o",
@@ -454,12 +455,12 @@
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfyr4sgm5r2f",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxzybsenz2d",
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxzyoya3h2c",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbccoir2t",
-        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbuawxd2d"
+        "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbccoir2t"
       ]
     },
     "BRYCE": {
       "seen": [
+        "https://www.christiancentury.org/books/theology-self-help-according-thecla",
         "https://www.vox.com/podcasts/483033/polymarket-kalshi-betting-iran-war-assassination-missile-strikes",
         "https://www.theatlantic.com/national-security/2026/03/the-iran-wars-next-threat-is-to-food-and-water/686435/",
         "https://www.christiancentury.org/books/ufw-march-and-writing-catholic-history",
@@ -658,8 +659,7 @@
         "https://thefederalist.com/2026/02/17/attacking-america-abroad-hillary-clinton-is-the-eileen-gu-of-politics/",
         "https://www.christiancentury.org/books/abstinence-and-agency",
         "https://thefederalist.com/2026/02/17/conservative-law-firm-picks-up-dobbs-litigator-to-fuel-more-supreme-court-victories/",
-        "https://relevantmagazine.com/culture/jemar-tisby-how-our-past-can-prepare-us-for-our-future/",
-        "https://www.christiancentury.org/news/jesse-jackson-dies-84"
+        "https://relevantmagazine.com/culture/jemar-tisby-how-our-past-can-prepare-us-for-our-future/"
       ],
       "repliedTo": [
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhew4lkigl2n",
@@ -3197,6 +3197,7 @@
   },
   "seenNotifications": {
     "RUTH": [
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhdqj7744727",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhekfaunmi2c",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhekfxl7zn2d",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhenq3upvs2o",
@@ -3445,8 +3446,7 @@
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfyr4sgm5r2f",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxzybsenz2d",
       "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxzyoya3h2c",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbccoir2t",
-      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbuawxd2d"
+      "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mfxsbccoir2t"
     ],
     "JERRY": [
       "at://did:plc:ekw573ji5r6wnj4j337w4g27/app.bsky.feed.post/3mhevvttlbd2a",
