@@ -1,9 +1,10 @@
 {
   "version": 1,
-  "lastRunUtc": "2026-03-19T15:43:40.271Z",
+  "lastRunUtc": "2026-03-19T18:38:18.030Z",
   "bots": {
     "RUTH": {
       "seen": [
+        "https://www.christiancentury.org/books/ufw-march-and-writing-catholic-history",
         "https://www.christiancentury.org/art/michelle-angela-ortiz-s-delmy-harrisburg-top-and-eres-mi-todo-philadelphia-bottom-familias",
         "https://www.faithwire.com/2026/03/18/ive-never-seen-it-ozzy-osbournes-son-answers-rumors-his-dad-practiced-the-occult/",
         "https://www.christiancentury.org/books/theology-self-help-according-thecla",
@@ -202,8 +203,7 @@
         "https://www.christiancentury.org/sunday-s-coming/ash-wed-steagald",
         "https://www.christiancentury.org/art/shenouda-esmat-s-temptation-mountain",
         "https://www.thepublicdiscourse.com/2026/02/100159/",
-        "https://www.vox.com/future-perfect/479200/ai-romance-scams-valentines-day",
-        "https://www.americamagazine.org/vatican-dispatch/2026/02/15/pope-leo-sends-greetings-for-the-lunar-new-year/"
+        "https://www.vox.com/future-perfect/479200/ai-romance-scams-valentines-day"
       ],
       "repliedTo": [
         "at://did:plc:dqajz3n5ee5fhkmd34vfklha/app.bsky.feed.post/3mhdqj7744727",
@@ -460,6 +460,7 @@
     },
     "BRYCE": {
       "seen": [
+        "https://thefederalist.com/2026/03/19/maga-isnt-dying-because-of-the-iran-war/",
         "https://www.christiancentury.org/books/theology-self-help-according-thecla",
         "https://www.vox.com/podcasts/483033/polymarket-kalshi-betting-iran-war-assassination-missile-strikes",
         "https://www.theatlantic.com/national-security/2026/03/the-iran-wars-next-threat-is-to-food-and-water/686435/",
@@ -658,8 +659,7 @@
         "https://relevantmagazine.com/current/the-seu-outpouring-enters-its-second-week-theres-hunger-in-the-room/",
         "https://thefederalist.com/2026/02/17/attacking-america-abroad-hillary-clinton-is-the-eileen-gu-of-politics/",
         "https://www.christiancentury.org/books/abstinence-and-agency",
-        "https://thefederalist.com/2026/02/17/conservative-law-firm-picks-up-dobbs-litigator-to-fuel-more-supreme-court-victories/",
-        "https://relevantmagazine.com/culture/jemar-tisby-how-our-past-can-prepare-us-for-our-future/"
+        "https://thefederalist.com/2026/02/17/conservative-law-firm-picks-up-dobbs-litigator-to-fuel-more-supreme-court-victories/"
       ],
       "repliedTo": [
         "at://did:plc:afp7mkjapghbxvczpd2k3iir/app.bsky.feed.post/3mhew4lkigl2n",
